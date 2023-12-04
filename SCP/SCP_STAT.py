@@ -8,6 +8,7 @@ class SCP_STAT:
         super().__init__()
         self.initUI()
         self.UI = UI
+        self.form = ".2f"
 
     def initUI(self):
         self.samplelist = []
@@ -29,7 +30,7 @@ class SCP_STAT:
             var = sumall/len(list)
             std = math.sqrt(var)
             Tab.solve.setVisible(True)
-            Tab.solve.setText(f"평균 : {avg},\n분산 : {var},\n표준편차 : {std}")
+            Tab.solve.setText(f"평균 : {format(avg, self.form)},\n분산 : {format(var, self.form)},\n표준편차 : {format(std, self.form)}")
         elif kind == "middle":
             L = sorted(list)
             q1_index = int(0.25 * (len(L)+ 1))
@@ -43,4 +44,9 @@ class SCP_STAT:
             srange = max(L)-min(L)
             iqr = q3 - q1
             Tab.solve.setVisible(True)
-            Tab.solve.setText(f"제1사분위수 : {q1},\n제2사분위수(중앙값) : {q2},\n제3사분위수 : {q3},\n표본범위 : {srange},\n표본사분위범위 : {iqr}")
+            a = "f"
+            Tab.solve.setText(f"""제1사분위수 : {format(q1, self.form)},
+                              \n제2사분위수(중앙값) : {format(q2, self.form)},
+                              \n제3사분위수 : {format(q3, self.form)},
+                              \n표본범위 : {format(srange, self.form)},
+                              \n표본사분위범위 : {format(iqr, self.form)}""")

@@ -1,17 +1,19 @@
 #Smart Calculation Program
 import sys, math, re
-from PyQt5.QtWidgets import QApplication, QPushButton, QToolTip, qApp, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QMessageBox
+from PyQt5.QtWidgets import QApplication, QPushButton, QToolTip, QCheckBox, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QMessageBox
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, QSize
 
 from SCP_STAT import *
+from SCP_OPTION import *
 
 #UI를 생성하는 SCP_UI 클래스
 class SCP_UI(QWidget):
 
-    def __init__(self, STAT):
+    def __init__(self, STAT, OPTION):
         super().__init__()
         self.STAT = STAT
+        self.OPTION = OPTION
         self.initUI()
         
 
@@ -35,8 +37,9 @@ class SCP_UI(QWidget):
         self.graph(self.graphTab)
         self.option(self.optionTab)
         
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.tabs)
+        self.layout = QVBoxLayout(self)
+        self.layout.addWidget(self.tabs)
+        self.OPTION.darkmode(self, "light")
         self.show()
 
 
@@ -109,7 +112,7 @@ class SCP_UI(QWidget):
         b0 = QPushButton('0')
         decimal_point = QPushButton('.')
         cal = QPushButton('=')
-        cal.clicked.connect(calculate)
+        #cal.clicked.connect(calculate)
 
         button_size = QSize(110, 75)  # 원하는 크기로 수정
         moduler.setFixedSize(button_size)
@@ -208,15 +211,12 @@ class SCP_UI(QWidget):
     #통계학 계산 UI 구성
     def statistic(self, statistic):
 
-        txt1 = self.create_label('계산할 수치 선택', color="black", bgcolor="white", border="None")
-        txt1.setToolTip('구할 수치를 알고 있다면 점선 위의 수치를,\n수치에서 알 수 있는 값을 알아보려면 점선 아래에서 대응하는 수치를 선택해주세요.')
-
+        txt1 = QLabel('계산할 수치 선택', statistic)
+        
         kind = QComboBox(statistic)
-        kind.setToolTip('구할 수치를 알고 있다면 점선 위의 수치를,\n수치에서 알 수 있는 값을 알아보려면 점선 아래에서 대응하는 수치를 선택해주세요.')
         kind.addItem('--------선택--------')
         kind.addItem('평균, 분산, 표준편차')
         kind.addItem('중앙값, 표본범위')
-
         kind.activated[str].connect(self.kindonActivated) #콤보상자 입력변수1
 
         select = QHBoxLayout()
@@ -230,20 +230,16 @@ class SCP_UI(QWidget):
 
 
         txt2 = QLabel('표본 입력 : ', statistic)
-        txt2.setToolTip('구할 수치를 알고 있다면 점선 위의 수치를,\n수치에서 알 수 있는 값을 알아보려면 점선 아래에서 대응하는 수치를 선택해주세요.')
         txt2.setAlignment(Qt.AlignLeft)
-        font = txt1.font()
-        font.setFamily('Times New Roman')
-        font.setBold(True)
-        txt2.setFont(font)
         statistic.txt2 = txt2
 
+        #표본 입력창
         data = QTextEdit(statistic)
-        data.setToolTip('')
         data.setAcceptRichText(False)
         data.textChanged.connect(lambda : setattr(self, 'txt', self.statisticTab.data.toPlainText()))
         statistic.data = data
 
+        #입력 버튼
         btn1 = QPushButton('OK', statistic)
         btn1.clicked.connect(lambda : self.STAT.textsplit(self.txt, self.kind, self.statisticTab))
         statistic.btn1 = btn1
@@ -256,6 +252,7 @@ class SCP_UI(QWidget):
         specimen.addLayout(header)
         specimen.addWidget(data)
 
+        #결과값 출력창
         solve = QTextEdit(statistic)
         solve.setAcceptRichText(False)
         solve.setReadOnly(True)
@@ -273,7 +270,7 @@ class SCP_UI(QWidget):
         vbox.addWidget(solve)
         vbox.addStretch(1)
 
-
+        explain.setVisible(False)
         txt2.setVisible(False)
         btn1.setVisible(False)
         data.setVisible(False)
@@ -281,41 +278,7 @@ class SCP_UI(QWidget):
         statistic.setLayout(vbox)
         self.tabs.addTab(statistic, '통계학 계산기')
 
-
-
-    def graph(self, graph):
-        btn = QPushButton('그래프 작성', graph)
-        btn.move(30, 200)
-        btn.resize(btn.sizeHint())
-        btn.clicked.connect(calculate)
-        layoutGraph = QVBoxLayout(graph)
-        layoutGraph.addWidget(btn)
-        graph.setLayout(layoutGraph)
-        self.tabs.addTab(graph, '그래프 작성')
-
-
-
-    def option(self, option):
-        #소수점 자리 수
-        self.tabs.addTab(option, '옵션')
-
-
-    # 통계학 계산기에서 각 단계를 진행할 때마다 레이아웃 갱신
-    def sTabphaze(self, Tab):
-        if self.kind=="wait":
-            Tab.txt2.setVisible(False)
-            Tab.btn1.setVisible(False)
-            Tab.data.setVisible(False)
-            Tab.solve.setVisible(False)
-            Tab.explain.setText("")
-        elif self.kind=="avg" or self.kind=="middle":
-            Tab.txt2.setVisible(True)
-            Tab.btn1.setVisible(True)
-            Tab.data.setVisible(True)
-            Tab.explain.setText("계산을 위해 표본의 데이터를 입력해주십시오.")
-
-
-    #콤보상자 입력변수
+    #콤보상자 입력변수 1
     def kindonActivated(self, text):
         if text=='--------선택--------':
             self.kind = "wait"
@@ -325,42 +288,56 @@ class SCP_UI(QWidget):
             self.kind = "middle"
         self.sTabphaze(self.statisticTab)
 
-
-    #textedit의 데이터가 변경되면 txt에 저장
-    def text_changed(self):
-        self.txt = self.statisticTab.data.toPlainText()
-
-    
-    
-
-
-def calculate(self):
-    print("0")
-
-# def Scalculate(list):
-#     if ex.kind == "avg":
-#         print(list)
-#         avg = sum(list)/len(list)
-#         sumall = 0
-#         for i in list:
-#             sumall += (i-avg)**2
-#         var = sumall/len(list)
-#         std = math.sqrt(var)
-#         ex.statisticTab.solve.setVisible(True)
-#         ex.statisticTab.solve.setText(f"평균 : {avg},\n분산 : {var},\n표준편차 : {std}")
-#     elif ex.kind == "middle":
-#         L = sorted(list)
-#         q1_index = int(0.25 * (len(L)+ 1))
-#         q2_index = int(0.5 * (len(L) + 1))
-#         q3_index = int(0.75 * (len(L) + 1))
-
-#         q1 = L[q1_index - 1] if len(L) % 4 == 0 else (L[q1_index - 1] + L[q1_index]) / 2
-#         q2 = L[q2_index - 1] if len(L) % 4 == 0 else (L[q2_index - 1] + L[q2_index]) / 2
-#         q3 = L[q3_index - 1] if len(L) % 4 == 0 else (L[q3_index - 1] + L[q3_index]) / 2
-
-#         srange = max(L)-min(L)
-#         iqr = q3 - q1
-#         ex.statisticTab.solve.setVisible(True)
-#         ex.statisticTab.solve.setText(f"제1사분위수 : {q1},\n제2사분위수(중앙값) : {q2},\n제3사분위수 : {q3},\n표본범위 : {srange},\n표본사분위범위 : {iqr}")
+    # 통계학 계산기에서 각 단계를 진행할 때마다 레이아웃 갱신
+    def sTabphaze(self, Tab):
+        if self.kind=="wait":
+            Tab.explain.setVisible(False)
+            Tab.txt2.setVisible(False)
+            Tab.btn1.setVisible(False)
+            Tab.data.setVisible(False)
+            Tab.solve.setVisible(False)
+            Tab.explain.setText("")
+        elif self.kind=="avg" or self.kind=="middle":
+            Tab.explain.setVisible(True)
+            Tab.txt2.setVisible(True)
+            Tab.btn1.setVisible(True)
+            Tab.data.setVisible(True)
+            Tab.explain.setText("계산을 위해 표본의 데이터를 입력해주십시오.")
 
 
+
+    def graph(self, graph):
+        btn = QPushButton('그래프 작성', graph)
+        btn.move(30, 200)
+        btn.resize(btn.sizeHint())
+        #btn.clicked.connect(calculate)
+        layoutGraph = QVBoxLayout(graph)
+        layoutGraph.addWidget(btn)
+        graph.setLayout(layoutGraph)
+        self.tabs.addTab(graph, ' 그래프 작성 ')
+
+
+
+    def option(self, option):
+        #소수점 자리 수
+        self.tabs.addTab(option, '       옵션      ')
+        darkmode= QComboBox(option)
+        darkmode.addItem('라이트 모드')
+        darkmode.addItem('다크 모드')
+        option.darkmode = darkmode
+        darkmode.activated[str].connect(self.darkmode)
+
+        cb = QCheckBox('창을 항상 화면의 맨 앞으로', option)
+        cb.clicked.connect(lambda : self.OPTION.ontop(self, cb.isChecked()))
+        option.cb = cb
+
+        layoutOption = QVBoxLayout(option)
+        layoutOption.addWidget(darkmode)
+        layoutOption.addWidget(cb)
+
+    #옵션의 라이트, 다크 모드가 변경되면 실행
+    def darkmode(self, text):
+        if text=='라이트 모드':
+            self.OPTION.darkmode(self, "light")
+        elif text=="다크 모드":
+            self.OPTION.darkmode(self, "dark")
