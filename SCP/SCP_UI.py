@@ -1,17 +1,14 @@
 #Smart Calculation Program
-from PyQt5.QtWidgets import QPushButton, QToolTip, QCheckBox, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QSpinBox
+from PyQt5.QtWidgets import QPushButton, QToolTip, QCheckBox, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QSpinBox, QGroupBox, QDialog, QGridLayout
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, QSize
-
-from SCP_STAT import *
-from SCP_OPTION import *
 
 #UI를 생성하는 SCP_UI 클래스
 class SCP_UI(QWidget):
 
     def __init__(self, STAT, OPTION):
         super().__init__()
-        self.STAT = STAT
+        self.STAT = STAT()
         self.OPTION = OPTION
         self.initUI()
         
@@ -57,23 +54,11 @@ class SCP_UI(QWidget):
         if callback:
             button.clicked.connect(callback)
         return button
-
-    #라벨 생성 함수
-    def create_label(self, text, alignment=Qt.AlignLeft, font='Times New Roman', Bold=True, color="black", bgcolor="#87CEFA", border="dashed"):
-        label = QLabel(text)
-        label.setAlignment(alignment)
-        lfont = label.font()
-        lfont.setFamily(font)
-        lfont.setBold(Bold)
-        label.setFont(lfont)
-        label.setStyleSheet(f"color: {color};"
-                            f"background-color: {bgcolor};"
-                            f"border-style: {border};")
-        return label
         
     #기본 계산기 UI
     def simple(self, simple):
-
+        
+        #계산기 디스플레이 라벨 생성
         label = QLabel('', simple)
         label.setAlignment(Qt.AlignLeft)
         font = label.font()
@@ -87,60 +72,34 @@ class SCP_UI(QWidget):
                               "border-color: #1E90FF")
 
         #계산기 버튼 구성
-        moduler = QPushButton('%')
-        CE = QPushButton('CE')
-        C = QPushButton('C')
-        backspace = QPushButton('<-')
-        fraction = QPushButton('1/x')
-        square = QPushButton('x²')
-        root = QPushButton('√x')
-        divide = QPushButton('/')
-        b7 = QPushButton('7')
-        b8 = QPushButton('8')
-        b9 = QPushButton('9')
-        multi = QPushButton('*')
-        b4 = QPushButton('4')
-        b5 = QPushButton('5')
-        b6 = QPushButton('6')
-        minus = QPushButton('-')
-        b1 = QPushButton('1')
-        b2 = QPushButton('2')
-        b3 = QPushButton('3')
-        plus = QPushButton('+')
-        p_m = QPushButton('+/-')
-        b0 = QPushButton('0')
-        decimal_point = QPushButton('.')
-        cal = QPushButton('=')
-        #cal.clicked.connect(calculate)
-
-        button_size = QSize(110, 75)  # 원하는 크기로 수정
-        moduler.setFixedSize(button_size)
-        CE.setFixedSize(button_size)
-        C.setFixedSize(button_size)
-        backspace.setFixedSize(button_size)
-        fraction.setFixedSize(button_size)
-        square.setFixedSize(button_size)
-        root.setFixedSize(button_size)
-        divide.setFixedSize(button_size)
-        b7.setFixedSize(button_size)
-        b8.setFixedSize(button_size)
-        b9.setFixedSize(button_size)
-        multi.setFixedSize(button_size)
-        b4.setFixedSize(button_size)
-        b5.setFixedSize(button_size)
-        b6.setFixedSize(button_size)
-        minus.setFixedSize(button_size)
-        b1.setFixedSize(button_size)
-        b2.setFixedSize(button_size)
-        b3.setFixedSize(button_size)
-        plus.setFixedSize(button_size)
-        p_m.setFixedSize(button_size)
-        b0.setFixedSize(button_size)
-        decimal_point.setFixedSize(button_size)
-        cal.setFixedSize(button_size)
+        button_size = QSize(110, 75)
+        modular = self.create_button('%', button_size)
+        CE = self.create_button('CE', button_size)
+        C = self.create_button('C', button_size)
+        backspace = self.create_button('<-', button_size)
+        fraction = self.create_button('1/x', button_size)
+        square = self.create_button('x²', button_size)
+        root = self.create_button('√x', button_size)
+        divide = self.create_button('/', button_size)
+        b7 = self.create_button('7', button_size)
+        b8 = self.create_button('8', button_size)
+        b9 = self.create_button('9', button_size)
+        multi = self.create_button('*', button_size)
+        b4 = self.create_button('4', button_size)
+        b5 = self.create_button('5', button_size)
+        b6 = self.create_button('6', button_size)
+        minus = self.create_button('-', button_size)
+        b1 = self.create_button('1', button_size)
+        b2 = self.create_button('2', button_size)
+        b3 = self.create_button('3', button_size)
+        plus = self.create_button('+', button_size)
+        p_m = self.create_button('+/-', button_size)
+        b0 = self.create_button('0', button_size)
+        decimal_point = self.create_button('.', button_size)
+        cal = self.create_button('=', button_size)
 
         input1 = QHBoxLayout()
-        input1.addWidget(moduler)
+        input1.addWidget(modular)
         input1.addWidget(CE)
         input1.addWidget(C)
         input1.addWidget(backspace)
@@ -324,21 +283,61 @@ class SCP_UI(QWidget):
             Tab.explain.setText("계산을 위해 표본의 데이터를 입력해주십시오.")
         return
 
+
     def cal(self):
-        print(self.kind)
         if self.kind=="sample1":
             A = self.STAT.textsplit(self.statisticTab.data1.toPlainText(), self.kind)
             print(A)
             self.statisticTab.solve.setText(A)
         elif self.kind=="sample2ind" or self.kind=="sample2mat":
-            A = self.STAT.textsplit(self.statisticTab.data1.toPlainText(), self.kind)
-            B = self.STAT.textsplit(self.statisticTab.data2.toPlainText(), self.kind)
+            A = self.STAT.textsplit(text = self.statisticTab.data1.toPlainText(), kind = self.kind)
+            B = self.STAT.textsplit(text = self.statisticTab.data2.toPlainText(), kind = self.kind)
             #표본 A, B, 유의수준이나 가설 등을 받아오는 condition
-            #self.statisticTab.solve.setText(self.STAT.indcal(A, B, condition))
+            condition = self.condition()
+            self.statisticTab.solve.setText(self.STAT.indcal(A, B, condition))
         self.statisticTab.solve.setVisible(True)
 
-        
-        
+    
+    def condition(self):
+        condition = QDialog()
+        condition.setWindowTitle('계산할 속성을 선택하세요')
+
+        # 확인 버튼 추가
+        button = QPushButton('확인')
+        button.clicked.connect(condition.accept)  # 다이얼로그 종료
+
+        #신뢰구간과 가설검정 내용을 입력받는 UI
+        groupbox = QGroupBox('신뢰구간과 가설검정')
+        groupbox.setCheckable(True)
+        groupbox.setChecked(False)
+
+        #유의수준
+        alpha = QTextEdit()
+
+        #모평균, 모비율, 모분산 추정
+
+        vbox = QVBoxLayout()
+
+        groupbox.setLayout(vbox)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(groupbox)
+        hbox.addWidget(button)
+        condition.setLayout(hbox)
+
+        condition.setWindowTitle('Box Layout')
+        condition.setGeometry(300, 300, 480, 320)
+        result = condition.exec_()  # 다이얼로그를 모달로 실행
+
+        if result == QDialog.Accepted:
+            if checkbox.isChecked():
+                print('사용자가 옵션을 선택했습니다.')
+            else:
+                print('사용자가 옵션을 선택하지 않았습니다.')
+        else:
+            print('사용자가 창을 닫았습니다.')
+
+        return 0
 
 
     def graph(self, graph):

@@ -1,11 +1,8 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QTextEdit, QComboBox
-from SCP_UI import *
+from PyQt5.QtCore import Qt
 
 class SCP_OPTION():
     def __init__(self):
         super().__init__()
-        self
 
     #라이트 모드, 다크 모드 변경
     def darkmode(UI, mode):
