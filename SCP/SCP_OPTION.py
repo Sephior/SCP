@@ -86,3 +86,15 @@ class SCP_OPTION():
         else:
             UI.setWindowFlags(UI.windowFlags() & ~Qt.WindowStaysOnTopHint)
         UI.show()
+
+    #소수점 자릿수 설정하기
+    def primenumber(num):
+        form = f".{int(num)}f"
+        return form
+    
+    #소표본일때 자유도 n-1로 설정
+    def small(UI, bool):
+        if bool:
+            return True
+        else:
+            return False

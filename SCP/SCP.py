@@ -2,6 +2,7 @@
 # 통계학 계산 프로그램
 #----------------------------------------
 
+#orange3
 import sys
 from PyQt5.QtWidgets import QApplication
 from SCP_UI import *

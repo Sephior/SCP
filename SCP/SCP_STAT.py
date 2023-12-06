@@ -9,29 +9,29 @@ class SCP_STAT:
         self.initUI()
         self.UI = UI
         self.form = ".2f"
+        self.small = False
 
     def initUI(self):
         self.samplelist = []
 
-    def textsplit(self, text, kind, Tab):
+    def textsplit(self, text, kind):
             if text[-1] == "\n" and not("\n" in text[0:-1]):
                 text = text[0:-1]
             numbers = re.findall(r'\d+', text)
-            print(numbers)
-            self.cal([int(number) for number in numbers], kind, Tab)
+            return self.basical([int(number) for number in numbers], kind)
     
-    def cal(self, list, kind, Tab):
-        if kind == "avg":
-            print(list)
+    def basical(self, list, kind):
             avg = sum(list)/len(list)
             sumall = 0
             for i in list:
                 sumall += (i-avg)**2
-            var = sumall/len(list)
+            #소표본일 때 자유도 n-1로 사용
+            if self.small==True:
+                var = sumall/(len(list)-1)
+            else:
+                var = sumall/len(list)
             std = math.sqrt(var)
-            Tab.solve.setVisible(True)
-            Tab.solve.setText(f"평균 : {format(avg, self.form)},\n분산 : {format(var, self.form)},\n표준편차 : {format(std, self.form)}")
-        elif kind == "middle":
+
             L = sorted(list)
             q1_index = int(0.25 * (len(L)+ 1))
             q2_index = int(0.5 * (len(L) + 1))
@@ -43,10 +43,18 @@ class SCP_STAT:
 
             srange = max(L)-min(L)
             iqr = q3 - q1
-            Tab.solve.setVisible(True)
-            a = "f"
-            Tab.solve.setText(f"""제1사분위수 : {format(q1, self.form)},
-                              \n제2사분위수(중앙값) : {format(q2, self.form)},
-                              \n제3사분위수 : {format(q3, self.form)},
-                              \n표본범위 : {format(srange, self.form)},
-                              \n표본사분위범위 : {format(iqr, self.form)}""")
+            if kind=="sample1":
+                return f"""평균 : {format(avg, self.form)}
+분산 : {format(var, self.form)}
+표준편차 : {format(std, self.form)}
+제1사분위수 : {format(q1, self.form)}
+제2사분위수(중앙값) : {format(q2, self.form)}
+제3사분위수 : {format(q3, self.form)}
+표본범위 : {format(srange, self.form)}
+표본사분위범위 : {format(iqr, self.form)}"""
+
+            elif kind[7]=="2":
+                return [len(list), avg, var, std, q1, q2, q3, srange, iqr]
+            
+    #def indcal(A, B, condition):
+        
