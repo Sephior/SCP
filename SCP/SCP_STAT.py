@@ -16,7 +16,7 @@ class SCP_STAT():
     def textsplit(self, text, kind):
             if text[-1] == "\n" and not("\n" in text[0:-1]):
                 text = text[0:-1]
-            numbers = re.findall(r'\d+\.\d+|\d+', text)
+            numbers = re.findall(r'-?\d+\.\d+|-?\d+', text)
             return self.basical([float(number) for number in numbers], kind)
     
     
