@@ -14,3 +14,4 @@ if __name__ == '__main__':
    app = QApplication(sys.argv)
    SCP_UI(SCP_STAT, SCP_OPTION).show
    sys.exit(app.exec_())
+   

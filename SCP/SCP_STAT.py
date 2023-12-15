@@ -24,6 +24,7 @@ class SCP_STAT():
     def basical(self, list, kind):
             print(list)
             result=""
+            result+=f"표본 수 : {format(len(list), self.form)}\n"
             avg = sum(list)/len(list)
             sumall = 0
             for i in list:
