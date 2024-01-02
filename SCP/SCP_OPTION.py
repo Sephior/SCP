@@ -1,4 +1,6 @@
+# flake8: noqa
 from PyQt5.QtCore import Qt
+
 
 class SCP_OPTION():
     def __init__(self):

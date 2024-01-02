@@ -1,4 +1,5 @@
 #Smart Calculation Program
+# flake8: noqa
 from PyQt5.QtWidgets import QPushButton, QToolTip, QCheckBox, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QSpinBox, QGroupBox, QDialog, QGridLayout
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, QSize
@@ -6,10 +7,11 @@ from PyQt5.QtCore import Qt, QSize
 #UI를 생성하는 SCP_UI 클래스
 class SCP_UI(QWidget):
 
-    def __init__(self, STAT, OPTION):
+    def __init__(self, STAT, OPTION, STANDARD):
         super().__init__()
         self.STAT = STAT()
         self.OPTION = OPTION
+        self.STANDARD = STANDARD()
         self.initUI()
         
 
@@ -24,11 +26,11 @@ class SCP_UI(QWidget):
         self.center()
         #각 탭 생성
         self.tabs = QTabWidget()
-        self.simpleTab = QWidget()
+        self.standardTab = QWidget()
         self.statisticTab = QWidget()
         self.graphTab = QWidget()
         self.optionTab = QWidget()
-        self.simple(self.simpleTab)
+        self.standard(self.standardTab)
         self.statistic(self.statisticTab)
         self.graph(self.graphTab)
         self.option(self.optionTab)
@@ -56,16 +58,17 @@ class SCP_UI(QWidget):
         return button
         
     #기본 계산기 UI
-    def simple(self, simple):
+    def standard(self, standard):
         
         #계산기 디스플레이 라벨 생성
-        label = QLabel('', simple)
-        label.setAlignment(Qt.AlignLeft)
-        font = label.font()
+        display = QLabel('0', standard)
+        display.setAlignment(Qt.AlignLeft)
+        font = display.font()
         font.setFamily('Times New Roman')
         font.setBold(True)
-        label.setFont(font)
-        label.setStyleSheet("color: blue;"
+        font.setPointSize(20)
+        display.setFont(font)
+        display.setStyleSheet("color: blue;"
                               "background-color: #87CEFA;"
                               "border-style: dashed;"
                               "border-width: 3px;"
@@ -73,30 +76,36 @@ class SCP_UI(QWidget):
 
         #계산기 버튼 구성
         button_size = QSize(110, 75)
-        modular = self.create_button('%', button_size)
-        CE = self.create_button('CE', button_size)
-        C = self.create_button('C', button_size)
-        backspace = self.create_button('<-', button_size)
-        fraction = self.create_button('1/x', button_size)
-        square = self.create_button('x²', button_size)
-        root = self.create_button('√x', button_size)
-        divide = self.create_button('/', button_size)
-        b7 = self.create_button('7', button_size)
-        b8 = self.create_button('8', button_size)
-        b9 = self.create_button('9', button_size)
-        multi = self.create_button('*', button_size)
-        b4 = self.create_button('4', button_size)
-        b5 = self.create_button('5', button_size)
-        b6 = self.create_button('6', button_size)
-        minus = self.create_button('-', button_size)
-        b1 = self.create_button('1', button_size)
-        b2 = self.create_button('2', button_size)
-        b3 = self.create_button('3', button_size)
-        plus = self.create_button('+', button_size)
-        p_m = self.create_button('+/-', button_size)
-        b0 = self.create_button('0', button_size)
-        decimal_point = self.create_button('.', button_size)
-        cal = self.create_button('=', button_size)
+
+        modular = self.create_button('(', button_size, lambda: display.setText(self.STANDARD.add('(')))
+        CE = self.create_button(')', button_size, lambda: display.setText(self.STANDARD.add(')')))
+        C = self.create_button('AC', button_size, lambda: display.setText(self.STANDARD.clear()))
+        backspace = self.create_button('DEL', button_size, lambda: display.setText(self.STANDARD.backspace()))
+
+        fraction = self.create_button('1/x', button_size, lambda: display.setText(self.STANDARD.add('1/')))
+        square = self.create_button('x²', button_size, lambda: display.setText(self.STANDARD.add('²')))
+        root = self.create_button('√x', button_size, lambda: display.setText(self.STANDARD.add('√')))
+        divide = self.create_button('/', button_size, lambda: display.setText(self.STANDARD.add('/')))
+
+        b7 = self.create_button('7', button_size, lambda: display.setText(self.STANDARD.add('7')))
+        b8 = self.create_button('8', button_size, lambda: display.setText(self.STANDARD.add('8')))
+        b9 = self.create_button('9', button_size, lambda: display.setText(self.STANDARD.add('9')))
+        multi = self.create_button('*', button_size, lambda: display.setText(self.STANDARD.add('*')))
+
+        b4 = self.create_button('4', button_size, lambda: display.setText(self.STANDARD.add('4')))
+        b5 = self.create_button('5', button_size, lambda: display.setText(self.STANDARD.add('5')))
+        b6 = self.create_button('6', button_size, lambda: display.setText(self.STANDARD.add('6')))
+        minus = self.create_button('-', button_size, lambda: display.setText(self.STANDARD.add('-')))
+
+        b1 = self.create_button('1', button_size, lambda: display.setText(self.STANDARD.add('1')))
+        b2 = self.create_button('2', button_size, lambda: display.setText(self.STANDARD.add('2')))
+        b3 = self.create_button('3', button_size, lambda: display.setText(self.STANDARD.add('3')))
+        plus = self.create_button('+', button_size, lambda: display.setText(self.STANDARD.add('+')))
+
+        p_m = self.create_button('ANS', button_size, lambda: display.setText(self.STANDARD.add(self.STANDARD.prev)))
+        b0 = self.create_button('0', button_size, lambda: display.setText(self.STANDARD.add('0')))
+        decimal_point = self.create_button('.', button_size, lambda: display.setText(self.STANDARD.add('.')))
+        cal = self.create_button('=', button_size, lambda: display.setText(self.STANDARD.cal()))
 
         input1 = QHBoxLayout()
         input1.addWidget(modular)
@@ -154,7 +163,7 @@ class SCP_UI(QWidget):
 
         vbox = QVBoxLayout()
         vbox.addSpacing(3)
-        vbox.addWidget(label)
+        vbox.addWidget(display)
         vbox.addSpacing(1)
         vbox.addLayout(input1)
         vbox.addLayout(input2)
@@ -162,9 +171,9 @@ class SCP_UI(QWidget):
         vbox.addLayout(input4)
         vbox.addLayout(input5)
         vbox.addLayout(input6)
-        simple.setLayout(vbox)
+        standard.setLayout(vbox)
 
-        self.tabs.addTab(simple, '공학용 계산기')
+        self.tabs.addTab(standard, '공학용 계산기')
 
     #통계학 계산 UI 구성
     def statistic(self, statistic):

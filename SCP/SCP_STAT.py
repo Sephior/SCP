@@ -1,6 +1,6 @@
 #Smart Calculation Program
+# flake8: noqa
 import re, math
-from scipy.stats import norm
 
 #통계학 계산을 수행하고 결과를 저장, 반환하는 SCP_STAT 클래스 생성
 class SCP_STAT():
