@@ -82,7 +82,7 @@ class SCP_UI(QWidget):
         C = self.create_button('AC', button_size, lambda: display.setText(self.STANDARD.clear()))
         backspace = self.create_button('DEL', button_size, lambda: display.setText(self.STANDARD.backspace()))
 
-        fraction = self.create_button('1/x', button_size, lambda: display.setText(self.STANDARD.add('1/')))
+        fraction = self.create_button('1/x', button_size, lambda: display.setText(self.STANDARD.add('(1/')))
         square = self.create_button('x²', button_size, lambda: display.setText(self.STANDARD.add('²')))
         root = self.create_button('√x', button_size, lambda: display.setText(self.STANDARD.add('√')))
         divide = self.create_button('/', button_size, lambda: display.setText(self.STANDARD.add('/')))
