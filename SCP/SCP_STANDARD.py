@@ -12,15 +12,17 @@ class SCP_STANDARD():
         self.prev = 0
         self.form = ".2f"
     
-    #입력 파싱
+    #입력
     def add(self, string):
         self.regularline += string
         return self.regularline
-        
+    
+    #초기화
     def clear(self):
         self.regularline = ""
         return self.regularline
     
+    #한 글자 지우기
     def backspace(self):
         self.regularline = self.regularline[0:-1]
         return self.regularline
@@ -29,11 +31,9 @@ class SCP_STANDARD():
     #후위 표기법 변환
     def reverse_poland(self, string):
         #기호를 전부 분리
-
         formula = re.findall(r'√?\d+\.\d+²?|√?\d+²?|--|[+\-*\/\(\)]', string)
-        #각 기호별로 재처리를 거치면서 후위 표기법으로 변환
-        print(formula)
 
+        #각 기호별로 재처리를 거치면서 후위 표기법으로 변환
         result = [] #결과물을 저장하는 리스트
         sign = [] #연산자를 넣을 리스트
         operators = ['+', '-', '*', '/', '(']
@@ -69,8 +69,6 @@ class SCP_STANDARD():
         for i in sign[::-1]:
             result.append(i)
             sign.pop()
-
-        print(sign, result)
         return result
 
     def Solve(self, list):
@@ -80,7 +78,7 @@ class SCP_STANDARD():
                  '*': lambda x, y: x * y,
                  '/': lambda x, y: x / y if y != 0 else float('inf')}
         
-        #regularline이 비었거나, 수식만 존재하는 등의 오류 처리
+        #regularline이 비었거나, 연산자만 존재하거나, 괄호가 안 닫히는 등의 오류 처리
         try:
             for i in list:
                 if type(i) is float:
@@ -94,10 +92,10 @@ class SCP_STANDARD():
                 
 
     def cal(self):
-        self.prev = str(self.Solve(self.reverse_poland(self.regularline)))
+        self.prev = self.Solve(self.reverse_poland(self.regularline))
         if self.prev == "error":
             result = self.regularline + "\n\n" + "error"
         else:
-            result = self.regularline + "\n\n" + f"{format(self.prev, self.form)}"
+            result = self.regularline + "\n\n" + str(format(self.prev, self.form))
             self.regularline = ""
         return result
