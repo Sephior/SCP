@@ -173,7 +173,7 @@ class SCP_UI(QWidget):
         vbox.addLayout(input6)
         standard.setLayout(vbox)
 
-        self.tabs.addTab(standard, '공학용 계산기')
+        self.tabs.addTab(standard, '공학 계산기')
 
     #통계학 계산 UI 구성
     def statistic(self, statistic):
@@ -183,10 +183,10 @@ class SCP_UI(QWidget):
         
         kind = QComboBox(statistic)
         kind.addItem('--------선택--------')
-        kind.addItem('1표본 값 계산')
-        kind.addItem('2표본 독립')
-        kind.addItem('2표본 대응')
-        kind.activated[str].connect(self.kindonActivated) #콤보상자 입력변수1
+        kind.addItem('1표본 분석')
+        kind.addItem('2표본 분석 (독립)')
+        kind.addItem('2표본 분석 (대응)')
+        kind.activated[str].connect(self.kindActivated) #콤보상자 입력변수1
 
         select = QHBoxLayout()
         select.addSpacing(1)
@@ -254,15 +254,15 @@ class SCP_UI(QWidget):
         self.tabs.addTab(statistic, '통계학 계산기')
 
     #콤보상자 입력변수 1
-    def kindonActivated(self, text):
+    def kindActivated(self, text):
         if text=='--------선택--------':
             self.kind = "wait"
-        elif text=='1표본 값 계산':
-            self.kind = "sample1"
-        elif text=="2표본 독립":
-            self.kind = "sample2ind"
-        elif text=="2표본 대응":
-            self.kind = "sample2mat"
+        elif text=='1표본 분석':
+            self.kind = "1"
+        elif text=="2표본 분석 (독립)":
+            self.kind = "2ind"
+        elif text=="2표본 분석 (대응)":
+            self.kind = "2mat"
         self.sTabphaze(self.statisticTab)
         return
 
@@ -276,14 +276,14 @@ class SCP_UI(QWidget):
             Tab.data2.setVisible(False)
             Tab.solve.setVisible(False)
             Tab.explain.setText("")
-        elif self.kind=="sample1":
+        elif self.kind=="1":
             Tab.explain.setVisible(True)
             Tab.txt2.setVisible(True)
             Tab.btn1.setVisible(True)
             Tab.data1.setVisible(True)
             Tab.data2.setVisible(False)
             Tab.explain.setText("계산을 위해 표본의 데이터를 입력해주십시오.")
-        elif self.kind=="sample2mat" or self.kind=="sample2ind":
+        elif self.kind=="2mat" or self.kind=="2ind":
             Tab.explain.setVisible(True)
             Tab.txt2.setVisible(True)
             Tab.btn1.setVisible(True)
@@ -294,11 +294,11 @@ class SCP_UI(QWidget):
 
 
     def cal(self):
-        if self.kind=="sample1":
+        if self.kind=="1":
             A = self.STAT.textsplit(self.statisticTab.data1.toPlainText(), self.kind)
             print(A)
             self.statisticTab.solve.setText(A)
-        elif self.kind=="sample2ind" or self.kind=="sample2mat":
+        elif self.kind=="2ind" or self.kind=="2mat":
             A = self.STAT.textsplit(text = self.statisticTab.data1.toPlainText(), kind = self.kind)
             B = self.STAT.textsplit(text = self.statisticTab.data2.toPlainText(), kind = self.kind)
             #표본 A, B, 유의수준이나 가설 등을 받아오는 condition
