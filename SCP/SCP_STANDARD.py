@@ -10,6 +10,7 @@ class SCP_STANDARD():
     def init(self):
         self.regularline = "" #str형식으로 저장\
         self.prev = 0
+        self.form = ".2f"
     
     #입력 파싱
     def add(self, string):
@@ -97,6 +98,6 @@ class SCP_STANDARD():
         if self.prev == "error":
             result = self.regularline + "\n\n" + "error"
         else:
-            result = self.regularline + "\n\n" + self.prev
+            result = self.regularline + "\n\n" + f"{format(self.prev, self.form)}"
             self.regularline = ""
         return result

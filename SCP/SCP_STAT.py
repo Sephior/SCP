@@ -30,7 +30,7 @@ class SCP_STAT():
             for i in list:
                 sumall += (i-avg)**2
             #소표본일 때 자유도 n-1로 사용
-            if self.small==True:
+            if len(L)<=30 and self.small == False:
                 var = sumall/(len(list)-1)
             else:
                 var = sumall/len(list)

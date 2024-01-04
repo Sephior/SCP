@@ -381,12 +381,13 @@ class SCP_UI(QWidget):
         prime.setRange(0, 30)
         prime.setValue(2)
         prime.valueChanged.connect(lambda : setattr(self.STAT, 'form', self.OPTION.primenumber(prime.value())))
+        prime.valueChanged.connect(lambda : setattr(self.STANDARD, 'form', self.OPTION.primenumber(prime.value())))
         option.prime = prime
         
-        label = QLabel('출력값의 소수점 자리수를 설정합니다.')
+        label = QLabel('공학용/통계학 계산기 출력값의 소수점 자리수를 설정합니다.')
 
-        # 소표본일 때 자유도 n-1 값 사용
-        cb2 = QCheckBox('소표본일 때 자유도를 n-1값으로 사용', option)
+        # 소표본일 때 자유도 n-1 값 사용하지 않음
+        cb2 = QCheckBox('소표본일 때 자유도 n-1 값 사용하지 않음', option)
         cb2.clicked.connect(lambda : setattr(self.STAT, 'small', self.OPTION.small(self, cb2.isChecked())))
         option.cb2 = cb2
 
