@@ -1,8 +1,108 @@
 #Smart Calculation Program
 # flake8: noqa
-from PyQt5.QtWidgets import QPushButton, QToolTip, QCheckBox, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QSpinBox, QGroupBox, QDialog, QGridLayout
+from PyQt5.QtWidgets import QPushButton, QToolTip, QCheckBox, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QSpinBox, QGroupBox, QDialog, QLineEdit
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, QSize
+
+
+
+# 통계학 계산 시의 옵션 레이아웃 클래스
+class OptionDialog(QDialog):
+    def __init__(self):
+        super(OptionDialog, self).__init__()
+
+        self.initUI()
+
+    def setcheckbox(self, name, checked=False):
+        checkbox = QCheckBox(name)
+        checkbox.setChecked(checked)
+        return checkbox
+
+    def initUI(self):
+        # 그룹박스 생성
+        groupBox1 = QGroupBox('기본 옵션')
+
+        # 체크박스 생성
+        checkbox1 = self.setcheckbox('평균', True)
+        checkbox2 = self.setcheckbox('분산', True)
+        checkbox3 = self.setcheckbox('표준편차', True)
+        checkbox4 = self.setcheckbox('중앙값')
+        checkbox5 = self.setcheckbox('사분위수')
+        checkbox6 = self.setcheckbox('표본범위')
+
+        # 왼쪽 레이아웃 설정
+        vbox = QVBoxLayout()
+        vbox.addWidget(checkbox1)
+        vbox.addWidget(checkbox2)
+        vbox.addWidget(checkbox3)
+        vbox.addWidget(checkbox4)
+        vbox.addWidget(checkbox5)
+        vbox.addWidget(checkbox6)
+        groupBox1.setLayout(vbox)
+
+
+        # 그룹박스 생성
+        groupBox2 = QGroupBox('추정 옵션')
+        groupBox2.setEnabled(False)
+
+        # 체크박스 생성
+        checkbox7 = self.setcheckbox('평균', True)
+        checkbox8 = self.setcheckbox('분산', True)
+        checkbox9 = self.setcheckbox('표준편차', True)
+        checkbox10 = self.setcheckbox('중앙값')
+        checkbox11 = self.setcheckbox('사분위수')
+        checkbox12 = self.setcheckbox('표본범위')
+
+        # 신뢰계수 입력을 위한 LineEdit 생성
+        qle = QLineEdit(self)
+        qle.textChanged[str].connect(lambda: groupBox2.setEnabled(True if str != "" else False))
+
+        #오른쪽 레이아웃 설정
+        vbox2 = QVBoxLayout()
+        vbox2.addWidget(checkbox7)
+        vbox2.addWidget(checkbox8)
+        vbox2.addWidget(checkbox9)
+        vbox2.addWidget(checkbox10)
+        vbox2.addWidget(checkbox11)
+        vbox2.addWidget(checkbox12)
+        groupBox2.setLayout(vbox2)
+        rightlayout = QVBoxLayout()
+        rightlayout.addWidget(qle)
+        rightlayout.addWidget(groupBox2)
+        
+
+        # 다이얼로그 버튼
+        okButton = QPushButton('확인')
+        okButton.clicked.connect(calculate)
+        cancelButton = QPushButton('취소')
+
+        # 버튼 레이아웃 설정
+        buttonLayout = QHBoxLayout()
+        buttonLayout.addWidget(okButton)
+        buttonLayout.addWidget(cancelButton)
+
+        # 전체 레이아웃 설정
+        sublayout = QHBoxLayout()
+        sublayout.addWidget(groupBox1)
+        sublayout.addLayout(rightlayout)
+        
+        layout = QVBoxLayout()
+        layout.addLayout(sublayout)
+        layout.addLayout(buttonLayout)
+
+        # 다이얼로그 윈도우 설정
+        self.setLayout(layout)
+        self.setGeometry(500, 500, 500, 300)
+        self.setWindowTitle('옵션 설정')
+
+    def onChanged(self, str):
+        if str=="":
+            return False
+        else:
+            return True
+
+
+
 
 #UI를 생성하는 SCP_UI 클래스
 class SCP_UI(QWidget):
@@ -13,7 +113,6 @@ class SCP_UI(QWidget):
         self.OPTION = OPTION
         self.STANDARD = STANDARD()
         self.initUI()
-        
 
     #UI 구성
     def initUI(self):
@@ -184,8 +283,8 @@ class SCP_UI(QWidget):
         kind = QComboBox(statistic)
         kind.addItem('--------선택--------')
         kind.addItem('1표본 분석')
-        kind.addItem('2표본 분석 (독립)')
-        kind.addItem('2표본 분석 (대응)')
+        kind.addItem('2표본 분석')
+        kind.addItem('2표본 분석')
         kind.activated[str].connect(self.kindActivated) #콤보상자 입력변수1
 
         select = QHBoxLayout()
@@ -259,10 +358,8 @@ class SCP_UI(QWidget):
             self.kind = "wait"
         elif text=='1표본 분석':
             self.kind = "1"
-        elif text=="2표본 분석 (독립)":
-            self.kind = "2ind"
-        elif text=="2표본 분석 (대응)":
-            self.kind = "2mat"
+        elif text=="2표본 분석":
+            self.kind = "2"
         self.sTabphaze(self.statisticTab)
         return
 
@@ -276,29 +373,27 @@ class SCP_UI(QWidget):
             Tab.data2.setVisible(False)
             Tab.solve.setVisible(False)
             Tab.explain.setText("")
-        elif self.kind=="1":
+        else:
             Tab.explain.setVisible(True)
             Tab.txt2.setVisible(True)
             Tab.btn1.setVisible(True)
             Tab.data1.setVisible(True)
-            Tab.data2.setVisible(False)
             Tab.explain.setText("계산을 위해 표본의 데이터를 입력해주십시오.")
-        elif self.kind=="2mat" or self.kind=="2ind":
-            Tab.explain.setVisible(True)
-            Tab.txt2.setVisible(True)
-            Tab.btn1.setVisible(True)
-            Tab.data1.setVisible(True)
-            Tab.data2.setVisible(True)
-            Tab.explain.setText("계산을 위해 표본의 데이터를 입력해주십시오.")
+            if self.kind=="1":
+                Tab.data2.setVisible(False)
+            elif self.kind=="2":
+                Tab.data2.setVisible(True)
         return
 
-
+    #확인 버튼을 눌렀을 때 실제로 계산을 진행하는 단계
     def cal(self):
+        optionDialog = OptionDialog()
+        optionDialog.exec_()
         if self.kind=="1":
             A = self.STAT.textsplit(self.statisticTab.data1.toPlainText(), self.kind)
             print(A)
             self.statisticTab.solve.setText(A)
-        elif self.kind=="2ind" or self.kind=="2mat":
+        elif self.kind=="2":
             A = self.STAT.textsplit(text = self.statisticTab.data1.toPlainText(), kind = self.kind)
             B = self.STAT.textsplit(text = self.statisticTab.data2.toPlainText(), kind = self.kind)
             #표본 A, B, 유의수준이나 가설 등을 받아오는 condition
