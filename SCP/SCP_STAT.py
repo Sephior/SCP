@@ -13,15 +13,15 @@ class SCP_STAT():
         self.form = ".2f"
         self.small = False
 
-    def textsplit(self, text, kind):
+    def cal(self, text, kind):
             if text[-1] == "\n" and not("\n" in text[0:-1]):
                 text = text[0:-1]
             numbers = re.findall(r'-?\d+\.\d+|-?\d+', text)
-            return self.basical([float(number) for number in numbers], kind)
+            return self.result([float(number) for number in numbers], kind)
     
     
 
-    def basical(self, list, kind):
+    def result(self, list, kind):
             print(list)
             result=""
             result+=f"표본 수 : {format(len(list), self.form)}\n"
@@ -67,6 +67,6 @@ class SCP_STAT():
                 return [[len(list), avg, var, std, q1, q2, q3, srange, iqr], result]
 
 
-    def indcal(self, A, B, condition):
+    def secondcalcal(self, A, B, condition):
         result ="asdf"
         return result

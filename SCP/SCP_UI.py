@@ -23,6 +23,7 @@ class OptionDialog(QDialog):
         groupBox1 = QGroupBox('기본 옵션')
 
         # 체크박스 생성
+        checkbox = self.setcheckbox('표본 수', True)
         checkbox1 = self.setcheckbox('평균', True)
         checkbox2 = self.setcheckbox('분산', True)
         checkbox3 = self.setcheckbox('표준편차', True)
@@ -32,6 +33,7 @@ class OptionDialog(QDialog):
 
         # 왼쪽 레이아웃 설정
         vbox = QVBoxLayout()
+        vbox.addWidget(checkbox)
         vbox.addWidget(checkbox1)
         vbox.addWidget(checkbox2)
         vbox.addWidget(checkbox3)
@@ -59,6 +61,15 @@ class OptionDialog(QDialog):
         qle = QLineEdit(self)
         qle.textChanged[str].connect(lambda: groupBox2.setEnabled(True if str != "" else False))
         rbtn4.clicked.connect(lambda: qle.setEnabled(rbtn4.isChecked()))
+
+        # 신뢰계수 입력 레이아웃
+        hbox = QHBoxLayout()
+        hbox.addWidget(groupBox1)
+        hbox.addLayout(rbtn1)
+        hbox.addLayout(rbtn2)
+        hbox.addLayout(rbtn3)
+        hbox.addLayout(rbtn4)
+        hbox.addLayout(qle)
 
         #오른쪽 레이아웃 설정
         vbox2 = QVBoxLayout()
@@ -408,14 +419,14 @@ class SCP_UI(QWidget):
                 return 0
             else:
                 if self.kind=="1":
-                    A = self.STAT.textsplit(self.statisticTab.data1.toPlainText(), self.kind)
+                    A = self.STAT.cal(self.statisticTab.data1.toPlainText(), self.kind)
                     print(A)
                     self.statisticTab.solve.setText(A)
                 elif self.kind=="2":
-                    A = self.STAT.textsplit(text = self.statisticTab.data1.toPlainText(), kind = self.kind)
-                    B = self.STAT.textsplit(text = self.statisticTab.data2.toPlainText(), kind = self.kind)
+                    A = self.STAT.cal(text = self.statisticTab.data1.toPlainText(), kind = self.kind)
+                    B = self.STAT.cal(text = self.statisticTab.data2.toPlainText(), kind = self.kind)
                     #표본 A, B, 유의수준이나 가설 등을 받아오는 condition
-                    self.statisticTab.solve.setText(self.STAT.cal(A, B, condition))
+                    self.statisticTab.solve.setText(self.STAT.secondcal(A, B, condition))
                 self.statisticTab.solve.setVisible(True)
 
 
