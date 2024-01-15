@@ -452,11 +452,11 @@ class SCP_UI(QWidget):
             if condition['a']==-1:
                 return 0
             if self.kind=="1":
-                A = self.STAT.cal(self.statisticTab.data1.toPlainText(), self.kind, condition)
-                self.statisticTab.solve.setText(A)
+                A = self.STAT.cal(self.statisticTab.data1.toPlainText(), condition, "표본")
+                self.statisticTab.solve.setText(A[1])
             elif self.kind=="2":
-                A = self.STAT.cal(self.statisticTab.data1.toPlainText(), self.kind, condition)
-                B = self.STAT.cal(self.statisticTab.data2.toPlainText(), self.kind, condition)
+                A = self.STAT.cal(self.statisticTab.data1.toPlainText(), condition, "A")
+                B = self.STAT.cal(self.statisticTab.data2.toPlainText(), condition, "B")
                 #표본 A, B, 유의수준이나 가설 등을 받아오는 condition
                 self.statisticTab.solve.setText(self.STAT.secondcal(A, B, condition))
             self.statisticTab.solve.setVisible(True)
