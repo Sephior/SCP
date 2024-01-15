@@ -1,6 +1,6 @@
 #Smart Calculation Program
 # flake8: noqa
-from PyQt5.QtWidgets import QPushButton, QToolTip, QCheckBox, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QSpinBox, QGroupBox, QDialog, QLineEdit, QRadioButton
+from PyQt5.QtWidgets import QPushButton, QToolTip, QCheckBox, QDesktopWidget, QVBoxLayout, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QTextEdit, QSpinBox, QGroupBox, QDialog, QLineEdit, QRadioButton, QButtonGroup
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt, QSize
 
@@ -8,11 +8,16 @@ from PyQt5.QtCore import Qt, QSize
 
 # 통계학 계산 시의 옵션 레이아웃 클래스
 class OptionDialog(QDialog):
-    def __init__(self):
+    def __init__(self, kind):
         super(OptionDialog, self).__init__()
-
         self.initUI()
-
+        if kind=='1':
+            self.rbtn5.setVisible(False)
+            self.rbtn6.setVisible(False)
+        elif kind=='2':
+            self.rbtn5.setVisible(True)
+            self.rbtn6.setVisible(True)
+    
     def setcheckbox(self, name, checked=False):
         checkbox = QCheckBox(name)
         checkbox.setChecked(checked)
@@ -20,71 +25,89 @@ class OptionDialog(QDialog):
 
     def initUI(self):
         # 그룹박스 생성
-        groupBox1 = QGroupBox('기본 옵션')
+        groupBox1 = QGroupBox()
 
         # 체크박스 생성
-        checkbox = self.setcheckbox('표본 수', True)
-        checkbox1 = self.setcheckbox('평균', True)
-        checkbox2 = self.setcheckbox('분산', True)
-        checkbox3 = self.setcheckbox('표준편차', True)
-        checkbox4 = self.setcheckbox('중앙값')
-        checkbox5 = self.setcheckbox('사분위수')
-        checkbox6 = self.setcheckbox('표본범위')
+        self.checkbox = self.setcheckbox('표본 수', True)
+        self.checkbox1 = self.setcheckbox('평균', True)
+        self.checkbox2 = self.setcheckbox('분산', True)
+        self.checkbox3 = self.setcheckbox('표준편차', True)
+        self.checkbox4 = self.setcheckbox('중앙값')
+        self.checkbox5 = self.setcheckbox('사분위수')
+        self.checkbox6 = self.setcheckbox('표본범위')
 
         # 왼쪽 레이아웃 설정
         vbox = QVBoxLayout()
-        vbox.addWidget(checkbox)
-        vbox.addWidget(checkbox1)
-        vbox.addWidget(checkbox2)
-        vbox.addWidget(checkbox3)
-        vbox.addWidget(checkbox4)
-        vbox.addWidget(checkbox5)
-        vbox.addWidget(checkbox6)
+        vbox.addWidget(self.checkbox)
+        vbox.addWidget(self.checkbox1)
+        vbox.addWidget(self.checkbox2)
+        vbox.addWidget(self.checkbox3)
+        vbox.addWidget(self.checkbox4)
+        vbox.addWidget(self.checkbox5)
+        vbox.addWidget(self.checkbox6)
         groupBox1.setLayout(vbox)
 
 
         # 그룹박스 생성
-        groupBox2 = QGroupBox('추정 옵션')
-        groupBox2.setEnabled(False)
+        self.groupBox2 = QGroupBox('정규분포를 따르는 표본')
+        self.groupBox2.setCheckable(True)
+        self.groupBox2.setChecked(True)
+        self.groupBox2.setEnabled(False)
 
         # 체크박스 생성
-        checkbox7 = self.setcheckbox('모평균 신뢰구간', True)
-        checkbox8 = self.setcheckbox('모분산 신뢰구간')
-        checkbox9 = self.setcheckbox('모표준편차 신뢰구간')
+        self.checkbox7 = self.setcheckbox('모평균 신뢰구간', True)
+        self.checkbox8 = self.setcheckbox('모분산 신뢰구간')
+        self.checkbox9 = self.setcheckbox('모표준편차 신뢰구간')
 
 
         # 신뢰계수 입력을 위한 버튼 생성
-        rbtn1 = QRadioButton('0.1', self)
-        rbtn2 = QRadioButton('0.05', self)
-        rbtn3 = QRadioButton('0.025', self)
-        rbtn4 = QRadioButton('사용자 지정', self)
-        qle = QLineEdit(self)
-        qle.textChanged[str].connect(lambda: groupBox2.setEnabled(True if str != "" else False))
-        rbtn4.clicked.connect(lambda: qle.setEnabled(rbtn4.isChecked()))
+        self.rbtn1 = QRadioButton('0.1', self)
+        self.rbtn2 = QRadioButton('0.05', self)
+        self.rbtn3 = QRadioButton('0.025', self)
+        self.rbtn4 = QRadioButton('사용자 지정', self)
+        self.qle = QLineEdit(self)
+        self.qle.setEnabled(False)
+
+        # 독립, 대응표본 입력을 위한 버튼
+        self.rbtn5 = QRadioButton('독립표본', self)
+        self.rbtn6 = QRadioButton('대응표본', self)
 
         # 신뢰계수 입력 레이아웃
         hbox = QHBoxLayout()
-        hbox.addWidget(groupBox1)
-        hbox.addLayout(rbtn1)
-        hbox.addLayout(rbtn2)
-        hbox.addLayout(rbtn3)
-        hbox.addLayout(rbtn4)
-        hbox.addLayout(qle)
+        self.button_group = QButtonGroup(self)
+        self.button_group.addButton(self.rbtn1)
+        self.button_group.addButton(self.rbtn2)
+        self.button_group.addButton(self.rbtn3)
+        self.button_group.addButton(self.rbtn4)
+        hbox.addWidget(self.rbtn1)
+        hbox.addWidget(self.rbtn2)
+        hbox.addWidget(self.rbtn3)
+        hbox.addWidget(self.rbtn4)
+        hbox.addWidget(self.qle)
+        self.button_group.buttonClicked.connect(lambda: (self.groupBox2.setEnabled(True), self.qle.setEnabled(self.rbtn4.isChecked())))
+
+        # 독립, 대응표본 입력 레이아웃
+        self.hbox2 = QHBoxLayout()
+        self.button_group2 = QButtonGroup(self)
+        self.button_group2.addButton(self.rbtn5)
+        self.button_group2.addButton(self.rbtn6)
+        self.hbox2.addWidget(self.rbtn5)
+        self.hbox2.addWidget(self.rbtn6)
 
         #오른쪽 레이아웃 설정
         vbox2 = QVBoxLayout()
-        vbox2.addWidget(checkbox7)
-        vbox2.addWidget(checkbox8)
-        vbox2.addWidget(checkbox9)
-        groupBox2.setLayout(vbox2)
+        vbox2.addWidget(self.checkbox7)
+        vbox2.addWidget(self.checkbox8)
+        vbox2.addWidget(self.checkbox9)
+        self.groupBox2.setLayout(vbox2)
         rightlayout = QVBoxLayout()
-        rightlayout.addWidget(qle)
-        rightlayout.addWidget(groupBox2)
+        rightlayout.addLayout(hbox)
+        rightlayout.addLayout(self.hbox2)
+        rightlayout.addWidget(self.groupBox2)
         
-
         # 다이얼로그 버튼
         okButton = QPushButton('확인')
-        okButton.clicked.connect(self.accept())
+        okButton.clicked.connect(self.accept)
 
         # 전체 레이아웃 설정
         sublayout = QHBoxLayout()
@@ -112,7 +135,17 @@ class OptionDialog(QDialog):
             a = float(self.qle.text())
         else:
             a = -1
+
+        # 독립, 대응표본 반환
+        if self.rbtn5.isChecked():
+            mode = '독립'
+        elif self.rbtn6.isChecked():
+            mode = '대응'
+        else:
+            mode = None
+
         return {
+            '표본 수': self.checkbox.isChecked(),
             '평균': self.checkbox1.isChecked(),
             '분산': self.checkbox2.isChecked(),
             '표준편차': self.checkbox3.isChecked(),
@@ -120,6 +153,8 @@ class OptionDialog(QDialog):
             '사분위수': self.checkbox5.isChecked(),
             '표본범위': self.checkbox6.isChecked(),
             'a' : a,
+            '표본' : mode,
+            '정규분포': self.groupBox2.isChecked(),
             '모평균 신뢰구간' : self.checkbox7.isChecked(),
             '모분산 신뢰구간' : self.checkbox8.isChecked(),
             '모표준편차 신뢰구간' : self.checkbox9.isChecked()
@@ -410,24 +445,21 @@ class SCP_UI(QWidget):
 
     #확인 버튼을 눌렀을 때 실제로 계산을 진행하는 단계
     def cal(self):
-        optionDialog = OptionDialog()
+        optionDialog = OptionDialog(self.kind)
         result = optionDialog.exec_()
         if result == QDialog.Accepted:
             condition = optionDialog.getCheckboxStates()
-
             if condition['a']==-1:
                 return 0
-            else:
-                if self.kind=="1":
-                    A = self.STAT.cal(self.statisticTab.data1.toPlainText(), self.kind)
-                    print(A)
-                    self.statisticTab.solve.setText(A)
-                elif self.kind=="2":
-                    A = self.STAT.cal(text = self.statisticTab.data1.toPlainText(), kind = self.kind)
-                    B = self.STAT.cal(text = self.statisticTab.data2.toPlainText(), kind = self.kind)
-                    #표본 A, B, 유의수준이나 가설 등을 받아오는 condition
-                    self.statisticTab.solve.setText(self.STAT.secondcal(A, B, condition))
-                self.statisticTab.solve.setVisible(True)
+            if self.kind=="1":
+                A = self.STAT.cal(self.statisticTab.data1.toPlainText(), self.kind, condition)
+                self.statisticTab.solve.setText(A)
+            elif self.kind=="2":
+                A = self.STAT.cal(self.statisticTab.data1.toPlainText(), self.kind, condition)
+                B = self.STAT.cal(self.statisticTab.data2.toPlainText(), self.kind, condition)
+                #표본 A, B, 유의수준이나 가설 등을 받아오는 condition
+                self.statisticTab.solve.setText(self.STAT.secondcal(A, B, condition))
+            self.statisticTab.solve.setVisible(True)
 
 
     def graph(self, graph):
