@@ -6,7 +6,6 @@ from scipy.stats import norm, t, chi2
 #통계학 계산을 수행하고 결과를 저장, 반환하는 SCP_STAT 클래스 생성
 class SCP_STAT():
     def __init__(self):
-        super().__init__()
         self.init()
 
     def init(self):

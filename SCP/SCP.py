@@ -23,5 +23,5 @@ from SCP_SOLVE import *
 if __name__ == '__main__':
    #SCP.py에서 실행
    app = QApplication(sys.argv)
-   SCP_UI(SCP_STAT, SCP_OPTION, SCP_STANDARD, SCP_SOLVE).show
+   SCP_UI(SCP_STAT, SCP_OPTION, SCP_STANDARD, SCP_SOLVE).show()
    sys.exit(app.exec_())

@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 
 class SCP_OPTION():
     def __init__(self):
-        super().__init__()
+        pass
 
     #라이트 모드, 다크 모드 변경
     def darkmode(UI, mode):

@@ -160,22 +160,136 @@ class OptionDialog(QDialog):
             '모표준편차 신뢰구간' : self.checkbox9.isChecked()
         }
 
+# 확률 문제 계산 시의 옵션 레이아웃 클래스
+class OptionDialog2(QDialog):
+    def __init__(self):
+        super(OptionDialog2, self).__init__()
+        self.initUI()
 
+    def initUI(self):
+        # 확률 입력을 위한 라인 생성
+        self.text1 = QLabel('P(A)  ', self)
+        self.line1 = QLineEdit("", self)
+        self.text2 = QLabel('P(B)  ', self)
+        self.line2 = QLineEdit("", self)
+        self.text3 = QLabel('P(AUB)', self)
+        self.line3 = QLineEdit("", self)
+        self.text4 = QLabel('P(AxB)', self)
+        self.line4 = QLineEdit("", self)
+        self.text5 = QLabel('P(Ac) ', self)
+        self.line5 = QLineEdit("", self)
+        self.text6 = QLabel('P(Bc) ', self)
+        self.line6 = QLineEdit("", self)
+        self.text7 = QLabel('P(A|B)', self)
+        self.line7 = QLineEdit("", self)
+        self.text8 = QLabel('P(B|A)', self)
+        self.line8 = QLineEdit("", self)
+
+        # 다이얼로그 버튼
+        okButton = QPushButton('확인')
+        okButton.clicked.connect(self.accept)
+
+        # 목표 입력
+        self.text9 = QLabel('찾으려는 목표를 입력 \nex) AxB(교집합), Ac|B 등', self)
+        self.line9 = QLineEdit("", self)
+
+        # 전체 레이아웃 설정
+        l1 = QHBoxLayout()
+        l1.addWidget(self.text1)
+        l1.addWidget(self.line1)
+
+        l2 = QHBoxLayout()
+        l2.addWidget(self.text2)
+        l2.addWidget(self.line2)
+
+        l3 = QHBoxLayout()
+        l3.addWidget(self.text3)
+        l3.addWidget(self.line3)
+
+        l4 = QHBoxLayout()
+        l4.addWidget(self.text4)
+        l4.addWidget(self.line4)
+
+        l5 = QHBoxLayout()
+        l5.addWidget(self.text5)
+        l5.addWidget(self.line5)
+
+        l6 = QHBoxLayout()
+        l6.addWidget(self.text6)
+        l6.addWidget(self.line6)
+
+        l7 = QHBoxLayout()
+        l7.addWidget(self.text7)
+        l7.addWidget(self.line7)
+
+        l8 = QHBoxLayout()
+        l8.addWidget(self.text8)
+        l8.addWidget(self.line8)
+
+        layout = QVBoxLayout()
+        layout.addLayout(l1)
+        layout.addLayout(l2)
+        layout.addLayout(l5)
+        layout.addLayout(l6)
+        layout.addLayout(l3)
+        layout.addLayout(l4)
+        layout.addLayout(l7)
+        layout.addLayout(l8)
+        layout.addWidget(self.text9)
+        layout.addWidget(self.line9)
+        layout.addWidget(okButton)
+
+        # 다이얼로그 윈도우 설정
+        self.setLayout(layout)
+        self.setGeometry(500, 500, 500, 300)
+        self.setWindowTitle('확률 입력')
+
+    def getLineStates(self):
+        # 확률 반환
+        result = {}
+        if self.line1.text()!="":
+            result["A"] = float(self.line1.text())
+        if self.line2.text()!="":
+            result["B"] = float(self.line2.text())
+        if self.line3.text()!="":
+            result["AUB"] = float(self.line3.text())
+        if self.line4.text()!="":
+            result["AxB"] = float(self.line4.text())
+        if self.line5.text()!="":
+            result["Ac"] = float(self.line5.text())
+        if self.line6.text()!="":
+            result["Bc"] = float(self.line6.text())
+        if self.line7.text()!="":
+            result["AB"] = float(self.line7.text())
+        if self.line8.text()!="":
+            result["BA"] = float(self.line8.text())
+        if self.line9.text()=="":
+            text = "목표를 알 수 없습니다."
+        else:
+            text = self.line9.text()
+            if "∩" in text:
+                text = text.replace("∩", "x")
+            elif "|" in text:
+                text = text.replace("|", "")
+        print(text, result)
+        return text, result
 
 
 #UI를 생성하는 SCP_UI 클래스
 class SCP_UI(QWidget):
 
-    def __init__(self, STAT, OPTION, STANDARD):
+    def __init__(self, STAT, OPTION, STANDARD, SOLVE):
         super().__init__()
         self.STAT = STAT()
         self.OPTION = OPTION
         self.STANDARD = STANDARD()
+        self.SOLVE = SOLVE()
         self.initUI()
 
     #UI 구성
     def initUI(self):
         self.kind=None
+        self.kind2=None
         self.txt = "error"
         QToolTip.setFont(QFont('SansSerif', 10))
         self.setWindowTitle('SCP')
@@ -186,11 +300,11 @@ class SCP_UI(QWidget):
         self.tabs = QTabWidget()
         self.standardTab = QWidget()
         self.statisticTab = QWidget()
-        self.graphTab = QWidget()
+        self.solveTab = QWidget()
         self.optionTab = QWidget()
         self.standard(self.standardTab)
         self.statistic(self.statisticTab)
-        self.graph(self.graphTab)
+        self.solve(self.solveTab)
         self.option(self.optionTab)
         
         self.layout = QVBoxLayout(self)
@@ -343,7 +457,7 @@ class SCP_UI(QWidget):
         kind.addItem('--------선택--------')
         kind.addItem('1표본 분석')
         kind.addItem('2표본 분석')
-        kind.activated[str].connect(self.kindActivated) #콤보상자 입력변수1
+        kind.activated[str].connect(self.kindActivated) #콤보상자 입력변수 1
 
         select = QHBoxLayout()
         select.addSpacing(1)
@@ -384,10 +498,10 @@ class SCP_UI(QWidget):
         sample.addWidget(data2)
 
         #결과값 출력창
-        solve = QTextEdit(statistic)
-        solve.setAcceptRichText(False)
-        solve.setReadOnly(True)
-        statistic.solve = solve
+        resolve = QTextEdit(statistic)
+        resolve.setAcceptRichText(False)
+        resolve.setReadOnly(True)
+        statistic.resolve = resolve
 
         #레이아웃 설정
         vbox = QVBoxLayout()
@@ -398,7 +512,7 @@ class SCP_UI(QWidget):
         vbox.addSpacing(3)
         vbox.addLayout(sample)
         vbox.addSpacing(3)
-        vbox.addWidget(solve)
+        vbox.addWidget(resolve)
         vbox.addStretch(1)
 
         explain.setVisible(False)
@@ -406,7 +520,7 @@ class SCP_UI(QWidget):
         btn1.setVisible(False)
         data1.setVisible(False)
         data2.setVisible(False)
-        solve.setVisible(False)
+        resolve.setVisible(False)
         statistic.setLayout(vbox)
         self.tabs.addTab(statistic, '통계학 계산기')
 
@@ -429,7 +543,7 @@ class SCP_UI(QWidget):
             Tab.btn1.setVisible(False)
             Tab.data1.setVisible(False)
             Tab.data2.setVisible(False)
-            Tab.solve.setVisible(False)
+            Tab.resolve.setVisible(False)
             Tab.explain.setText("")
         else:
             Tab.explain.setVisible(True)
@@ -453,25 +567,109 @@ class SCP_UI(QWidget):
                 return 0
             if self.kind=="1":
                 A = self.STAT.cal(self.statisticTab.data1.toPlainText(), condition, "표본")
-                self.statisticTab.solve.setText(A[1])
+                self.statisticTab.resolve.setText(A[1])
             elif self.kind=="2":
                 A = self.STAT.cal(self.statisticTab.data1.toPlainText(), condition, "A")
                 B = self.STAT.cal(self.statisticTab.data2.toPlainText(), condition, "B")
                 #표본 A, B, 유의수준이나 가설 등을 받아오는 condition
-                self.statisticTab.solve.setText(self.STAT.secondcal(A, B, condition))
-            self.statisticTab.solve.setVisible(True)
+                self.statisticTab.resolve.setText(self.STAT.secondcal(A, B, condition))
+            self.statisticTab.resolve.setVisible(True)
 
 
-    def graph(self, graph):
-        btn = QPushButton('그래프 작성', graph)
-        btn.move(30, 200)
-        btn.resize(btn.sizeHint())
-        #btn.clicked.connect(calculate)
-        layoutGraph = QVBoxLayout(graph)
-        layoutGraph.addWidget(btn)
-        graph.setLayout(layoutGraph)
-        self.tabs.addTab(graph, ' 그래프 작성 ')
+    def solve(self, solve):
+        txt1 = QLabel('계산할 문제 선택', solve)
+
+        kind= QComboBox(solve)
+        kind.addItem('--------선택--------')
+        kind.addItem('확률 문제 {P(A) 등}')
+        kind.activated[str].connect(self.kindActivated2) #콤보상자 입력변수
+
+        select = QHBoxLayout()
+        select.addSpacing(1)
+        select.addWidget(txt1)
+        select.addWidget(kind)
+        select.addSpacing(1)
+
+        #구체적으로 할 일을 알려주는 라벨
+        explain = QLabel('', solve)
+        solve.explain = explain
+
+        #결과 입력
+        txt2 = QLabel('버튼을 눌러\n확률 값 변경', solve)
+        txt2.setAlignment(Qt.AlignLeft)
+        solve.txt2 = txt2
+
+        #결과 출력창
+        data = QTextEdit(solve)
+        data.setAcceptRichText(False)
+        data.setReadOnly(True)
+        solve.data = data
+
+        #입력 버튼
+        btn1 = QPushButton('값 변경', solve)
+        btn1.clicked.connect(self.cal2)
+        solve.btn1 = btn1
+
+        header = QHBoxLayout()
+        header.addWidget(txt2)
+        header.addWidget(btn1)
+
+        #레이아웃 설정
+        vbox = QVBoxLayout()
+        vbox.addSpacing(3)
+        vbox.addLayout(select)
+        vbox.addSpacing(3)
+        vbox.addWidget(explain)
+        vbox.addSpacing(3)
+        vbox.addLayout(header)
+        vbox.addWidget(data)
+        vbox.addStretch(1)
+
+        explain.setVisible(False)
+        txt2.setVisible(False)
+        btn1.setVisible(False)
+        data.setVisible(False)
+        solve.setLayout(vbox)
+        self.tabs.addTab(solve, '문제 풀이 도우미')
+        
+
+    #콤보상자 입력변수 2
+    def kindActivated2(self, text):
+        if text=='--------선택--------':
+            self.kind2 = "wait"
+        elif text=='확률 문제 {P(A) 등}':
+            self.kind2 = "prob"
+        self.sTabphaze2(self.solveTab)
         return
+
+    # 문제 도우미에서 각 단계를 진행할 때마다 레이아웃 갱신
+    def sTabphaze2(self, Tab):
+        if self.kind2=="wait":
+            Tab.explain.setVisible(False)
+            Tab.txt2.setVisible(False)
+            Tab.btn1.setVisible(False)
+            Tab.data.setVisible(False)
+            Tab.explain.setText("")
+        else:
+            Tab.explain.setVisible(True)
+            Tab.txt2.setVisible(True)
+            Tab.btn1.setVisible(True)
+            Tab.explain.setText("계산을 위해 아래 버튼을 눌러 확률 값을 입력해주십시오.")
+        return
+
+    # 확인 버튼을 눌렀을 때 실제로 계산을 진행하는 단계
+    def cal2(self):
+        if self.kind2=="prob":
+            optionDialog = OptionDialog2()
+            result = optionDialog.exec_()
+            if result == QDialog.Accepted:
+                goal, data = optionDialog.getLineStates()
+                print(goal)
+                print(data)
+                # 주어진 확률 값을 받아오는 딕셔너리 data
+                self.solveTab.data.setText(self.SOLVE.Pprocess(goal, data))
+                self.solveTab.data.setVisible(True)
+
 
 
     def option(self, option):
@@ -495,6 +693,7 @@ class SCP_UI(QWidget):
         prime.setValue(2)
         prime.valueChanged.connect(lambda : setattr(self.STAT, 'form', self.OPTION.primenumber(prime.value())))
         prime.valueChanged.connect(lambda : setattr(self.STANDARD, 'form', self.OPTION.primenumber(prime.value())))
+        prime.valueChanged.connect(lambda : setattr(self.SOLVE, 'form', self.OPTION.primenumber(prime.value())))
         option.prime = prime
         
         label = QLabel('공학용/통계학 계산기 출력값의 소수점 자리수를 설정합니다.')
