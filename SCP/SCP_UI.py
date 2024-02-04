@@ -167,76 +167,200 @@ class OptionDialog2(QDialog):
         self.initUI()
 
     def initUI(self):
+        # 확률 입력 시 가독성을 위한 그룹박스 생성
+        self.groupBox1 = QGroupBox() # 단일
+        self.groupBox2 = QGroupBox() # 교집합
+        self.groupBox3 = QGroupBox() # 합집합
+        self.groupBox4 = QGroupBox() # 조건부 확률
+
         # 확률 입력을 위한 라인 생성
-        self.text1 = QLabel('P(A)  ', self)
-        self.line1 = QLineEdit("", self)
-        self.text2 = QLabel('P(B)  ', self)
-        self.line2 = QLineEdit("", self)
-        self.text3 = QLabel('P(AUB)', self)
-        self.line3 = QLineEdit("", self)
-        self.text4 = QLabel('P(AxB)', self)
-        self.line4 = QLineEdit("", self)
-        self.text5 = QLabel('P(Ac) ', self)
-        self.line5 = QLineEdit("", self)
-        self.text6 = QLabel('P(Bc) ', self)
-        self.line6 = QLineEdit("", self)
-        self.text7 = QLabel('P(A|B)', self)
-        self.line7 = QLineEdit("", self)
-        self.text8 = QLabel('P(B|A)', self)
-        self.line8 = QLineEdit("", self)
+        # 단일 확률
+        self.text11 = QLabel('P(A)  ', self)
+        self.line11 = QLineEdit("", self)
+        self.text12 = QLabel('P(B)  ', self)
+        self.line12 = QLineEdit("", self)
+        self.text13 = QLabel('P(Ac)', self)
+        self.line13 = QLineEdit("", self)
+        self.text14 = QLabel('P(Bc)', self)
+        self.line14 = QLineEdit("", self)
+
+        # 교집합 확률
+        self.text21 = QLabel('P(AxB) ', self)
+        self.line21 = QLineEdit("", self)
+        self.text22 = QLabel('P(AcxB) ', self)
+        self.line22 = QLineEdit("", self)
+        self.text23 = QLabel('P(AxBc)', self)
+        self.line23 = QLineEdit("", self)
+        self.text24 = QLabel('P(AcxBc)', self)
+        self.line24 = QLineEdit("", self)
+
+        # 합집합 확률
+        self.text31 = QLabel('P(AUB) ', self)
+        self.line31 = QLineEdit("", self)
+        self.text32 = QLabel('P(AcUB) ', self)
+        self.line32 = QLineEdit("", self)
+        self.text33 = QLabel('P(AUBc)', self)
+        self.line33 = QLineEdit("", self)
+        self.text34 = QLabel('P(AcUBc)', self)
+        self.line34 = QLineEdit("", self)
+
+        # 조건부 확률
+        self.text41 = QLabel('P(A|B) ', self)
+        self.line41 = QLineEdit("", self)
+        self.text42 = QLabel('P(Ac|B) ', self)
+        self.line42 = QLineEdit("", self)
+        self.text43 = QLabel('P(A|Bc)', self)
+        self.line43 = QLineEdit("", self)
+        self.text44 = QLabel('P(Ac|Bc)', self)
+        self.line44 = QLineEdit("", self)
+        self.text45 = QLabel('P(B|A) ', self)
+        self.line45 = QLineEdit("", self)
+        self.text46 = QLabel('P(B|Ac) ', self)
+        self.line46 = QLineEdit("", self)
+        self.text47 = QLabel('P(Bc|A)', self)
+        self.line47 = QLineEdit("", self)
+        self.text48 = QLabel('P(Bc|Ac)', self)
+        self.line48 = QLineEdit("", self)
 
         # 다이얼로그 버튼
         okButton = QPushButton('확인')
         okButton.clicked.connect(self.accept)
 
-        # 목표 입력
-        self.text9 = QLabel('찾으려는 목표를 입력 \nex) AxB(교집합), Ac|B 등', self)
-        self.line9 = QLineEdit("", self)
+        # 목표 입력을 위한 라벨 생성
+        self.text = QLabel('찾으려는 목표를 입력 \nex) AxB(교집합), Ac|B 등', self)
+        self.line = QLineEdit("", self)
 
         # 전체 레이아웃 설정
-        l1 = QHBoxLayout()
-        l1.addWidget(self.text1)
-        l1.addWidget(self.line1)
+        l11 = QHBoxLayout()
+        l11.addWidget(self.text11)
+        l11.addWidget(self.line11)
 
-        l2 = QHBoxLayout()
-        l2.addWidget(self.text2)
-        l2.addWidget(self.line2)
+        l12 = QHBoxLayout()
+        l12.addWidget(self.text12)
+        l12.addWidget(self.line12)
 
-        l3 = QHBoxLayout()
-        l3.addWidget(self.text3)
-        l3.addWidget(self.line3)
+        l13 = QHBoxLayout()
+        l13.addWidget(self.text13)
+        l13.addWidget(self.line13)
 
-        l4 = QHBoxLayout()
-        l4.addWidget(self.text4)
-        l4.addWidget(self.line4)
+        l14 = QHBoxLayout()
+        l14.addWidget(self.text14)
+        l14.addWidget(self.line14)
 
-        l5 = QHBoxLayout()
-        l5.addWidget(self.text5)
-        l5.addWidget(self.line5)
+        l21 = QHBoxLayout()
+        l21.addWidget(self.text21)
+        l21.addWidget(self.line21)
 
-        l6 = QHBoxLayout()
-        l6.addWidget(self.text6)
-        l6.addWidget(self.line6)
+        l22 = QHBoxLayout()
+        l22.addWidget(self.text22)
+        l22.addWidget(self.line22)
 
-        l7 = QHBoxLayout()
-        l7.addWidget(self.text7)
-        l7.addWidget(self.line7)
+        l23 = QHBoxLayout()
+        l23.addWidget(self.text23)
+        l23.addWidget(self.line23)
 
-        l8 = QHBoxLayout()
-        l8.addWidget(self.text8)
-        l8.addWidget(self.line8)
+        l24 = QHBoxLayout()
+        l24.addWidget(self.text24)
+        l24.addWidget(self.line24)
+
+        l31 = QHBoxLayout()
+        l31.addWidget(self.text31)
+        l31.addWidget(self.line31)
+
+        l32 = QHBoxLayout()
+        l32.addWidget(self.text32)
+        l32.addWidget(self.line32)
+
+        l33 = QHBoxLayout()
+        l33.addWidget(self.text33)
+        l33.addWidget(self.line33)
+
+        l34 = QHBoxLayout()
+        l34.addWidget(self.text34)
+        l34.addWidget(self.line34)
+
+        l41 = QHBoxLayout()
+        l41.addWidget(self.text41)
+        l41.addWidget(self.line41)
+
+        l42 = QHBoxLayout()
+        l42.addWidget(self.text42)
+        l42.addWidget(self.line42)
+
+        l43 = QHBoxLayout()
+        l43.addWidget(self.text43)
+        l43.addWidget(self.line43)
+
+        l44 = QHBoxLayout()
+        l44.addWidget(self.text44)
+        l44.addWidget(self.line44)
+
+        l45 = QHBoxLayout()
+        l45.addWidget(self.text45)
+        l45.addWidget(self.line45)
+
+        l46 = QHBoxLayout()
+        l46.addWidget(self.text46)
+        l46.addWidget(self.line46)
+
+        l47 = QHBoxLayout()
+        l47.addWidget(self.text47)
+        l47.addWidget(self.line47)
+
+        l48 = QHBoxLayout()
+        l48.addWidget(self.text48)
+        l48.addWidget(self.line48)
+
+        #생성한 레이아웃을 그룹박스에 입력
+        vbox1 = QVBoxLayout()
+        vbox1.addLayout(l11)
+        vbox1.addLayout(l12)
+        vbox1.addLayout(l13)
+        vbox1.addLayout(l14)
+        self.groupBox1.setLayout(vbox1)
+
+        vbox2 = QVBoxLayout()
+        vbox2.addLayout(l21)
+        vbox2.addLayout(l22)
+        vbox2.addLayout(l23)
+        vbox2.addLayout(l24)
+        self.groupBox2.setLayout(vbox2)
+
+        layout1 = QHBoxLayout()
+        layout1.addWidget(self.groupBox1)
+        layout1.addWidget(self.groupBox2)
+
+        vbox3 = QVBoxLayout()
+        vbox3.addLayout(l31)
+        vbox3.addLayout(l32)
+        vbox3.addLayout(l33)
+        vbox3.addLayout(l34)
+        self.groupBox3.setLayout(vbox3)
+
+        vbox4 = QVBoxLayout()
+        vbox4.addLayout(l41)
+        vbox4.addLayout(l42)
+        vbox4.addLayout(l43)
+        vbox4.addLayout(l44)
+        vbox4.addLayout(l45)
+        vbox4.addLayout(l46)
+        vbox4.addLayout(l47)
+        vbox4.addLayout(l48)
+        self.groupBox4.setLayout(vbox4)
+
+        layout1 = QHBoxLayout()
+        layout1.addWidget(self.groupBox1)
+        layout1.addWidget(self.groupBox2)
+
+        layout2 = QHBoxLayout()
+        layout2.addWidget(self.groupBox3)
+        layout2.addWidget(self.groupBox4)
 
         layout = QVBoxLayout()
-        layout.addLayout(l1)
-        layout.addLayout(l2)
-        layout.addLayout(l5)
-        layout.addLayout(l6)
-        layout.addLayout(l3)
-        layout.addLayout(l4)
-        layout.addLayout(l7)
-        layout.addLayout(l8)
-        layout.addWidget(self.text9)
-        layout.addWidget(self.line9)
+        layout.addLayout(layout1)
+        layout.addLayout(layout2)
+        layout.addWidget(self.text)
+        layout.addWidget(self.line)
         layout.addWidget(okButton)
 
         # 다이얼로그 윈도우 설정
@@ -247,29 +371,55 @@ class OptionDialog2(QDialog):
     def getLineStates(self):
         # 확률 반환
         result = {}
-        if self.line1.text()!="":
-            result["A"] = float(self.line1.text())
-        if self.line2.text()!="":
-            result["B"] = float(self.line2.text())
-        if self.line3.text()!="":
-            result["AUB"] = float(self.line3.text())
-        if self.line4.text()!="":
-            result["AxB"] = float(self.line4.text())
-        if self.line5.text()!="":
-            result["Ac"] = float(self.line5.text())
-        if self.line6.text()!="":
-            result["Bc"] = float(self.line6.text())
-        if self.line7.text()!="":
-            result["AB"] = float(self.line7.text())
-        if self.line8.text()!="":
-            result["BA"] = float(self.line8.text())
-        if self.line9.text()=="":
+        if self.line11.text()!="":
+            result[self.text11.text()] = self.line11.text()
+        if self.line12.text()!="":
+            result[self.text12.text()] = self.line12.text()
+        if self.line13.text()!="":
+            result[self.text13.text()] = self.line13.text()
+        if self.line14.text()!="":
+            result[self.text14.text()] = self.line14.text()
+
+        if self.line21.text()!="":
+            result[self.text21.text()] = self.line21.text()
+        if self.line22.text()!="":
+            result[self.text22.text()] = self.line22.text()
+        if self.line23.text()!="":
+            result[self.text23.text()] = self.line23.text()
+        if self.line24.text()!="":
+            result[self.text24.text()] = self.line24.text()
+
+        if self.line31.text()!="":
+            result[self.text31.text()] = self.line31.text()
+        if self.line32.text()!="":
+            result[self.text32.text()] = self.line32.text()
+        if self.line33.text()!="":
+            result[self.text33.text()] = self.line33.text()
+        if self.line34.text()!="":
+            result[self.text34.text()] = self.line34.text()
+
+        if self.line41.text()!="":
+            result[self.text41.text()] = self.line41.text()
+        if self.line42.text()!="":
+            result[self.text42.text()] = self.line42.text()
+        if self.line43.text()!="":
+            result[self.text43.text()] = self.line43.text()
+        if self.line44.text()!="":
+            result[self.text44.text()] = self.line44.text()
+        if self.line45.text()!="":
+            result[self.text45.text()] = self.line45.text()
+        if self.line46.text()!="":
+            result[self.text46.text()] = self.line46.text()
+        if self.line47.text()!="":
+            result[self.text47.text()] = self.line47.text()
+        if self.line48.text()!="":
+            result[self.text48.text()] = self.line48.text()
+
+        if self.line.text()=="":
             text = "목표를 알 수 없습니다."
         else:
-            text = self.line9.text()
-            if "∩" in text:
-                text = text.replace("∩", "x")
-            elif "|" in text:
+            text = self.line.text()
+            if "|" in text:
                 text = text.replace("|", "")
         print(text, result)
         return text, result
@@ -664,10 +814,14 @@ class SCP_UI(QWidget):
             result = optionDialog.exec_()
             if result == QDialog.Accepted:
                 goal, data = optionDialog.getLineStates()
-                print(goal)
-                print(data)
+                
+                input={}
+                for key, value in data.items():
+                    # key에서 P()꼴을 제거
+                    # 분수 입력이나 연산에도 대응 가능하도록 공학용 계산기의 함수 이용
+                    input[key.replace("P(", "").replace(")", "").strip()]=self.STANDARD.cal4SOLVE(value)
                 # 주어진 확률 값을 받아오는 딕셔너리 data
-                self.solveTab.data.setText(self.SOLVE.Pprocess(goal, data))
+                self.solveTab.data.setText(self.SOLVE.Pprocess(goal, input))
                 self.solveTab.data.setVisible(True)
 
 

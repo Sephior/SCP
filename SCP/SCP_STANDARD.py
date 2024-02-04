@@ -90,12 +90,17 @@ class SCP_STANDARD():
         except:
             return "error"
                 
-
+    #실제로 호출되는 함수 cal
     def cal(self):
         self.prev = self.Solve(self.reverse_poland(self.regularline))
+        # 결과값을 문자열 형태로 가공 및 반환
         if self.prev == "error":
             result = self.regularline + "\n\n" + "error"
         else:
             result = self.regularline + "\n\n" + str(format(self.prev, self.form))
             self.regularline = ""
         return result
+    
+    #SOLVE의 입력시에 연산이 필요한 경우 연산해서 반환
+    def cal4SOLVE(self, text):
+        return self.Solve(self.reverse_poland(text))
