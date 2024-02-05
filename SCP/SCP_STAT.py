@@ -55,20 +55,22 @@ class SCP_STAT():
                 srange = max(L)-min(L)
                 iqr = q3 - q1
 
-        #모평균 신뢰구간 계산
+        # 신뢰계수 값이 없으면 스킵
             a = condition['a']
-            if lenL<=30 and condition['정규분포']==False:
-                # 스튜던트 t분포 사용
-                t_score = t.ppf(1 - (a) / 2, df=lenL-1)
-                avgCinterval = (avg-t_score*std/math.sqrt(lenL), avg+t_score*std/math.sqrt(lenL))
-            else:
-                # z분포 사용
-                z_score = norm.ppf(1 - (a) / 2)
-                avgCinterval = (avg-z_score*std/math.sqrt(lenL), avg+z_score*std/math.sqrt(lenL))
+            if a!=-1:
+                #모평균 신뢰구간 계산
+                if lenL<=30 and condition['정규분포']==False:
+                    # 스튜던트 t분포 사용
+                    t_score = t.ppf(1 - (a) / 2, df=lenL-1)
+                    avgCinterval = (avg-t_score*std/math.sqrt(lenL), avg+t_score*std/math.sqrt(lenL))
+                else:
+                    # z분포 사용
+                    z_score = norm.ppf(1 - (a) / 2)
+                    avgCinterval = (avg-z_score*std/math.sqrt(lenL), avg+z_score*std/math.sqrt(lenL))
 
-        #모분산, 모표준편차 신뢰구간 계산
-            varCinterval = ((lenL-1)*var/chi2.ppf(1-a/2, df=lenL-1), (lenL-1)*var/chi2.ppf(a/2, df=lenL-1))
-            stdCinterval = (math.sqrt(varCinterval[0]), math.sqrt(varCinterval[1]))
+                #모분산, 모표준편차 신뢰구간 계산
+                varCinterval = ((lenL-1)*var/chi2.ppf(1-a/2, df=lenL-1), (lenL-1)*var/chi2.ppf(a/2, df=lenL-1))
+                stdCinterval = (math.sqrt(varCinterval[0]), math.sqrt(varCinterval[1]))
 
             if name!="대응표본":
                 if condition['표본 수']==True:
@@ -86,12 +88,15 @@ class SCP_STAT():
                 if condition['표본범위']==True:
                     result+=f"{name}의 표본범위 : {format(srange, self.form)}\n"
                     result+=f"{name}의 표본사분위범위 : {format(iqr, self.form)}\n"
-            if condition['모평균 신뢰구간']==True:
-                result+=f"{name}의 모평균 신뢰구간 : {(format(avgCinterval[0], self.form), format(avgCinterval[1], self.form))}\n"
-            if condition['모분산 신뢰구간']==True:
-                result+=f"{name}의 모분산 신뢰구간 : {(format(varCinterval[0], self.form), format(varCinterval[1], self.form))}\n"
-            if condition['모표준편차 신뢰구간']==True:
-                result+=f"{name}의 모표준편차 신뢰구간 : {(format(stdCinterval[0], self.form), format(stdCinterval[1], self.form))}\n"
+            try:
+                if condition['모평균 신뢰구간']==True:
+                    result+=f"{name}의 모평균 신뢰구간 : {(format(avgCinterval[0], self.form), format(avgCinterval[1], self.form))}\n"
+                if condition['모분산 신뢰구간']==True:
+                    result+=f"{name}의 모분산 신뢰구간 : {(format(varCinterval[0], self.form), format(varCinterval[1], self.form))}\n"
+                if condition['모표준편차 신뢰구간']==True:
+                    result+=f"{name}의 모표준편차 신뢰구간 : {(format(stdCinterval[0], self.form), format(stdCinterval[1], self.form))}\n"
+            except:
+                result+="신뢰구간을 계산할 수 없습니다."
 
             return [[list, avg, var, std], result]
 
