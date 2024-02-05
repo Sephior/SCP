@@ -25,7 +25,7 @@ class SCP_SOLVE():
         elif self.data[goal]<0:
             return "정상적이지 않은 입력입니다."
         else: 
-            return goal + " : " + format(self.data[goal], self.form)
+            return "P("+ goal + ") : " + format(self.data[goal], self.form)
 
     # 목표와 주어진 값을 바탕으로 계산을 시도하고 그 결과를 반환하는 함수
     def prob(self, goal):
@@ -118,5 +118,5 @@ class SCP_SOLVE():
         return self.data
 
     # 확률, 횟수, 성공이 적어도 몇 이상일 조건, 몇일 조건을 각각 입력받기
-    def rand_V():
+    def rand_V(self, p, n, min, max):
         return
