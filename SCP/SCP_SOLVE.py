@@ -1,4 +1,5 @@
 # flake8: noqa
+from math import comb
 
 class SCP_SOLVE():
     def __init__(self):
@@ -117,6 +118,30 @@ class SCP_SOLVE():
             self.data[f"{A}{B}"] = self.data[f"{A}x{B}"] / self.data[f"{B}"]
         return self.data
 
-    # 확률, 횟수, 성공이 적어도 몇 이상일 조건, 몇일 조건을 각각 입력받기
-    def rand_V(self, p, n, min, max):
-        return
+    # 확률, 횟수, 성공이 적어도 몇 이상일 조건, 몇일 조건을 각각 입력받기, 상세보기 옵션
+    def rand_V(self, p, n, min, max=None, detail=False):
+        #p는 성공 확률, q는 실패 확률
+        q = 1 - p
+        
+        # 최대 성공할 수 있는 수 max 초기화
+        if max==-1:
+            max = n
+        
+        
+        # 출력할 결과 초기화
+        data = {}
+        result = ""
+        
+        # n+1번 반복, 각 반복마다 성공횟수 1씩 증가
+        for i in range(n+1):
+            if i>=min and i<=max:
+                #result 딕셔너리에 저장
+                data[i] = p ** i * q ** (n-i) * comb(n, i)
+        # detail이 True면 딕셔너리에 저장, 아니면 수치로 저장
+        if detail==True:
+            for key, value in data.items():
+                result+=f"성공이 {key}번일 확률 : {format(value, self.form)}\n"
+        result+=f"총 확률 : {format(sum(value), self.form)}\n"
+        result+=f"기댓값 : {format(n*p, self.form)}"
+
+        return result
