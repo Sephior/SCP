@@ -103,4 +103,5 @@ class SCP_STANDARD():
     
     #SOLVE의 입력시에 연산이 필요한 경우 연산해서 반환
     def cal4SOLVE(self, text):
+        print(self.Solve(self.reverse_poland(text)))
         return self.Solve(self.reverse_poland(text))

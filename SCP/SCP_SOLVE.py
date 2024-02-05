@@ -141,7 +141,7 @@ class SCP_SOLVE():
         if detail==True:
             for key, value in data.items():
                 result+=f"성공이 {key}번일 확률 : {format(value, self.form)}\n"
-        result+=f"총 확률 : {format(sum(value), self.form)}\n"
+        result+=f"총 확률 : {format(sum(data.values()), self.form)}\n"
         result+=f"기댓값 : {format(n*p, self.form)}"
 
         return result
