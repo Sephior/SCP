@@ -25,7 +25,12 @@ class SCP_STAT():
     
 
     def cal(self, text, condition, name):
+            # 수치가 정상적으로 추출되지 않을 경우 에러 반환
             list = self.precal(text)
+            if len(list)==0:
+                result = "정상적이지 않은 표본입니다."
+                return [[list], result]
+
             #평균, 분산, 표준편차 계산
             result=""
             L = sorted(list)
@@ -102,6 +107,11 @@ class SCP_STAT():
 
 
     def secondcal(self, A, B, condition):
+        #정상적이지 않은 표본일 경우 에러 반환
+        if A[1]=="정상적이지 않은 표본입니다." or B[1]=="정상적이지 않은 표본입니다.":
+            result = A[1] + "\n\n" + B[1] + "\n\n" + "정상적이지 않은 표본으로 계산할 수 없습니다."
+            return result
+
         # 두 코드의 계산 결과 추출
         first = A[0]
         second = B[0]
