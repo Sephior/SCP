@@ -31,29 +31,25 @@ class SCP_STANDARD():
     #후위 표기법 변환
     def reverse_poland(self, string):
         #기호를 전부 분리
-        formula = re.findall(r'√?\d+\.\d+²?|√?\d+²?|--|[+\-*\/\(\)]', string)
+        formula = re.findall(r'√?\d+\.\d+²?|√?\d+²?|--|[+\-*/()]', string)
 
         #각 기호별로 재처리를 거치면서 후위 표기법으로 변환
         result = [] #결과물을 저장하는 리스트
         sign = [] #연산자를 넣을 리스트
-        operators = ['+', '-', '*', '/', '(']
-        
+        operators = {'+': 1, '-': 1, '*': 2, '/': 2}
+
         for i in formula:
             #괄호 처리
             if i == ')':
-                while (sign[-1]!='('):
+                while sign[-1] != '(':
                     result.append(sign.pop())
-                sign.pop()
+                sign.pop()  # '(' 제거
 
             elif i in operators:
-                #우선순위가 높은 연산자가 sign 내부에 존재하면 처리
-                if ('*' in sign or '/' in sign) and (i=='+' or i == '-' or i == '--'):
-                    while (sign[-1]=='+' or sign[-1]=='-'):
-                        result.append(sign.pop())
-                if i=='--':
-                    sign.append('+') 
-                else:
-                    sign.append(i)
+                # 우선순위가 높은 연산자가 sign 내부에 존재하면 처리
+                while (sign and sign[-1] != '(' and operators.get(sign[-1], 0) >= operators[i]):
+                    result.append(sign.pop())
+                sign.append(i)
 
             else:
                 #연산자가 아닌 값을 처리
@@ -61,14 +57,12 @@ class SCP_STANDARD():
                 if '√' in i:
                     a = math.sqrt(a)
                 if '²' in i:
-                    a *=a
+                    a *= a
                 result.append(a)
 
-        print(sign, result)
-        #sign의 남은 연산자 처리
-        for i in sign[::-1]:
-            result.append(i)
-            sign.pop()
+        # 남은 연산자 처리
+        while sign:
+            result.append(sign.pop())
         return result
 
     def Solve(self, list):
@@ -86,6 +80,7 @@ class SCP_STANDARD():
                 else:
                     operation = operators.get(i, lambda x, y: "Invalid operator")   
                     stack.append(operation(stack.pop(-2), stack.pop()))
+                    print(stack)
             return stack[0]
         except:
             return "error"
