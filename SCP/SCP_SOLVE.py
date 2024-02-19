@@ -127,7 +127,6 @@ class SCP_SOLVE():
         if max==-1:
             max = n
         
-        
         # 출력할 결과 초기화
         data = {}
         result = ""

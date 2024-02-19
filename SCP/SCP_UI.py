@@ -427,12 +427,13 @@ class OptionDialog2(QDialog):
 #UI를 생성하는 SCP_UI 클래스
 class SCP_UI(QWidget):
 
-    def __init__(self, STAT, OPTION, STANDARD, SOLVE):
+    def __init__(self, STAT, OPTION, STANDARD, SOLVE, EXTRACT):
         super().__init__()
         self.STAT = STAT()
         self.OPTION = OPTION
         self.STANDARD = STANDARD()
         self.SOLVE = SOLVE()
+        self.EXTRACT = EXTRACT
         self.initUI()
 
     #UI 구성
@@ -647,10 +648,15 @@ class SCP_UI(QWidget):
         sample.addWidget(data2)
 
         #결과값 출력창
-        resolve = QTextEdit(statistic)
-        resolve.setAcceptRichText(False)
-        resolve.setReadOnly(True)
-        statistic.resolve = resolve
+        data = QTextEdit(statistic)
+        data.setAcceptRichText(False)
+        data.setReadOnly(True)
+        statistic.data = data
+
+        #출력값 추출
+        extract = QPushButton('결과 추출')
+        extract.clicked.connect(lambda: self.extract(self.statisticTab))
+        statistic.extract = extract
 
         #레이아웃 설정
         vbox = QVBoxLayout()
@@ -661,7 +667,8 @@ class SCP_UI(QWidget):
         vbox.addSpacing(3)
         vbox.addLayout(sample)
         vbox.addSpacing(3)
-        vbox.addWidget(resolve)
+        vbox.addWidget(data)
+        vbox.addWidget(extract)
         vbox.addStretch(1)
 
         explain.setVisible(False)
@@ -669,7 +676,8 @@ class SCP_UI(QWidget):
         btn1.setVisible(False)
         data1.setVisible(False)
         data2.setVisible(False)
-        resolve.setVisible(False)
+        data.setVisible(False)
+        extract.setVisible(False)
         statistic.setLayout(vbox)
         self.tabs.addTab(statistic, '통계학 계산기')
 
@@ -692,7 +700,8 @@ class SCP_UI(QWidget):
             Tab.btn1.setVisible(False)
             Tab.data1.setVisible(False)
             Tab.data2.setVisible(False)
-            Tab.resolve.setVisible(False)
+            Tab.data.setVisible(False)
+            Tab.extract.setVisible(False)
             Tab.explain.setText("")
         else:
             Tab.explain.setVisible(True)
@@ -714,16 +723,17 @@ class SCP_UI(QWidget):
             condition = optionDialog.getCheckboxStates()
             if self.kind=="1":
                 A = self.STAT.cal(self.statisticTab.data1.toPlainText(), condition, "표본")
-                self.statisticTab.resolve.setText(A[1])
+                self.statisticTab.data.setText(A[1])
             elif self.kind=="2":
                 A = self.STAT.cal(self.statisticTab.data1.toPlainText(), condition, "A")
                 B = self.STAT.cal(self.statisticTab.data2.toPlainText(), condition, "B")
                 #표본 A, B, 유의수준이나 가설 등을 받아오는 condition
-                self.statisticTab.resolve.setText(self.STAT.secondcal(A, B, condition))
-            self.statisticTab.resolve.setVisible(True)
+                self.statisticTab.data.setText(self.STAT.secondcal(A, B, condition))
+            self.statisticTab.data.setVisible(True)
+            self.statisticTab.extract.setVisible(True)
 
     # 문제 풀이 도우미
-    def solve(self, solve):
+    def solve(self, solve):  #얘 매개변수가 solve인데 widget 추가하는게 vbox.addWidget(solve)가 있는걸 복사해놓고 수정을 안해서 탭에 탭을 넣고, 그 탭에 탭을 넣으려고 하니까 실행은 안되고
         txt = QLabel('계산할 문제 선택', solve)
 
         kind= QComboBox(solve)
@@ -755,7 +765,6 @@ class SCP_UI(QWidget):
         header = QHBoxLayout()
         header.addWidget(txt1)
         header.addWidget(btn1)
-
 
         #결과 입력
         txt21 = QLabel('성공 확률 : ', solve)
@@ -816,6 +825,10 @@ class SCP_UI(QWidget):
         data.setReadOnly(True)
         solve.data = data
 
+        extract = QPushButton('결과 추출')
+        extract.clicked.connect(lambda: self.extract(self.solveTab))
+        solve.extract = extract
+
         #레이아웃 설정
         vbox = QVBoxLayout()
         vbox.addSpacing(3)
@@ -828,6 +841,7 @@ class SCP_UI(QWidget):
         vbox.addLayout(header22)
         vbox.addLayout(header23)
         vbox.addWidget(data)
+        vbox.addWidget(extract)
         vbox.addStretch(1)
 
         explain.setVisible(False)
@@ -844,6 +858,7 @@ class SCP_UI(QWidget):
         btn2.setVisible(False)
         checkbox2.setVisible(False)
         data.setVisible(False)
+        extract.setVisible(False)
         solve.setLayout(vbox)
         self.tabs.addTab(solve, '문제 풀이 도우미')
         
@@ -876,6 +891,7 @@ class SCP_UI(QWidget):
             Tab.btn2.setVisible(False)
             Tab.checkbox2.setVisible(False)
             Tab.data.setVisible(False)
+            Tab.extract.setVisible(False)
             Tab.explain.setText("")
         elif self.kind2=="prob":
             Tab.explain.setVisible(True)
@@ -891,6 +907,7 @@ class SCP_UI(QWidget):
             Tab.spin22.setVisible(False)
             Tab.btn2.setVisible(False)
             Tab.checkbox2.setVisible(False)
+            Tab.extract.setVisible(False)
             Tab.explain.setText("계산을 위해 아래 버튼을 눌러 확률 값을 입력해주십시오.")
         elif self.kind2=="rand":
             Tab.explain.setVisible(True)
@@ -906,6 +923,7 @@ class SCP_UI(QWidget):
             Tab.spin22.setVisible(True)
             Tab.btn2.setVisible(True)
             Tab.checkbox2.setVisible(True)
+            Tab.extract.setVisible(False)
             Tab.explain.setText("계산을 위해 조건을 입력해주십시오.")
         return
 
@@ -924,6 +942,7 @@ class SCP_UI(QWidget):
                 # 주어진 확률 값을 받아오는 딕셔너리 data
                 self.solveTab.data.setText(self.SOLVE.Pprocess(goal, input))
                 self.solveTab.data.setVisible(True)
+                self.solveTab.extract.setVisible(True)
         elif self.kind2=="rand":
             try:
                 p = self.STANDARD.cal4SOLVE(self.solveTab.line21.text())
@@ -933,9 +952,25 @@ class SCP_UI(QWidget):
                 detail = self.solveTab.checkbox2.isChecked()
                 self.solveTab.data.setText(self.SOLVE.rand_V(p, n, min, max, detail))
                 self.solveTab.data.setVisible(True)
+                self.solveTab.extract.setVisible(True)
             except:
                 QMessageBox.question(self, '에러', '정상적이지 않은 입력입니다.')
 
+    # 결과를 추출하는 함수 
+    def extract(self, Tab):
+        # extract 클래스 사용
+        self.EXTRACT.save_as_txt(Tab.data.toPlainText())
+        # QMessageBox를 생성하고 텍스트와 버튼을 설정합니다.
+        msg = QMessageBox()
+        msg.setWindowTitle("결과 출력")
+        msg.setText("결과가 정상적으로 출력되었습니다.")
+        msg.setIcon(QMessageBox.Information)
+        msg.setStandardButtons(QMessageBox.Ok)
+        # 메세지박스 출력
+        msg.exec_()
+        
+
+    #옵션을 설정하는 함수
     def option(self, option):
         self.tabs.addTab(option, '       옵션      ')
 
