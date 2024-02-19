@@ -134,5 +134,5 @@ class SCP_STAT():
             result = "독립표본 또는 대응표본이 선택되지 않았습니다."
 
         # 반환할 결과값
-        result = A[1] + "\n" + B[1] + "\n" + result
+        result = A[1] + "\n\n" + B[1] + "\n\n" + result
         return result
