@@ -123,13 +123,15 @@ class SCP_STAT():
 
         #대응표본에서의 신뢰구간 계산
         elif condition['표본']=="대응":
-            if n2!=n2:
+            if n1!=n2:
                 result = "대응표본의 수는 서로 같아야 합니다."
             else:
                 Dl = []
                 for i, j in zip(first[0], second[0]):
                     Dl.append(i-j)
                 result = self.cal(Dl, condition, "대응표본")[1]
+        else:
+            result = "독립표본 또는 대응표본이 선택되지 않았습니다."
 
         # 반환할 결과값
         result = A[1] + "\n" + B[1] + "\n" + result
