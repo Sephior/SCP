@@ -9,7 +9,7 @@ class SCP_STANDARD():
 
     def init(self):
         self.regularline = "" #str형식으로 저장\
-        self.prev = 0
+        self.prev = "0"
         self.form = ".2f"
     
     #입력
